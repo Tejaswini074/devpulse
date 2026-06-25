@@ -4,7 +4,7 @@ const AuthController = require("./auth.controller");
 const authMiddleware = require("../../middleware/authMiddleware");
 const validate = require("../../middleware/validationMiddleware");
 
-const { registerValidator, loginValidator, changePasswordValidator, updateProfileValidator, refreshTokenValidator } = require("./auth.validator");
+const { registerValidator, loginValidator, resetPasswordValidator, changePasswordValidator, updateProfileValidator, refreshTokenValidator } = require("./auth.validator");
 
 router.post("/register", registerValidator, validate, AuthController.register);
 
@@ -21,5 +21,7 @@ router.put("/change-password", authMiddleware, changePasswordValidator, validate
 router.post("/refresh-token", refreshTokenValidator, validate, AuthController.refreshToken);
 
 router.post("/forgot-password", forgotPasswordValidator, validate, AuthController.forgotPassword);
+
+router.post("/reset-password", resetPasswordValidator, validate, AuthController.resetPassword);
 
 module.exports = router;

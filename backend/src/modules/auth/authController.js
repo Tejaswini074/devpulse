@@ -25,7 +25,7 @@ class AuthController {
             );
         }
     }
-    
+
     async login(req, res) {
         try {
             const { email, password } = req.body;
@@ -150,6 +150,25 @@ class AuthController {
             );
         }
 
+    }
+    async resetPassword(req, res) {
+
+        try {
+            const { token, newPassword } = req.body;
+            await AuthService.resetPassword(token, newPassword);
+            return Response.success(
+                res,
+                MSG.PASSWORD_RESET_SUCCESS
+            );
+        }
+        catch (error) {
+            console.error(error);
+            return Response.error(
+                res,
+                error.message,
+                400
+            );
+        }
     }
 }
 

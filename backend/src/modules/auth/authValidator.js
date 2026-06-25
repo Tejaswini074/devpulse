@@ -130,3 +130,20 @@ exports.forgotPasswordValidator = [
         .withMessage("Invalid email")
 
 ];
+exports.resetPasswordValidator = [
+
+    body("token")
+        .notEmpty()
+        .withMessage("Token is required"),
+
+    body("newPassword")
+        .notEmpty()
+        .withMessage("Password is required")
+        .isLength({
+            min: 8
+        })
+        .withMessage(
+            "Password must be at least 8 characters"
+        )
+
+];

@@ -230,5 +230,66 @@ class AuthService {
         return true;
         // TODO: Create Forgot Password Activity Log
     }
+
+    async resetPassword(token, newPassword) {
+
+        const resetToken =
+            await AuthRepository.findPasswordResetToken(token);
+
+        if (!resetToken) {
+            throw new Error(MSG.INVALID_RESET_TOKEN);
+        }
+
+        if (new Date(resetToken.expires_at) < new Date()) {
+            throw new Error(MSG.RESET_TOKEN_EXPIRED);
+        }
+
+        const user = await AuthRepository.findUserById(resetToken.user_id);
+
+        const isSamePassword = await comparePassword(newPassword, user.password);
+
+        if (isSamePassword) {
+            throw new Error(
+                "New password cannot be the same as old password"
+            );
+        }
+
+        const hashedPassword =
+            await hashPassword(newPassword);
+
+        await AuthRepository.updatePassword(
+            resetToken.user_id,
+            hashedPassword
+        );
+
+        // Delete every password reset token
+        await AuthRepository.deleteOldPasswordTokens(
+            resetToken.user_id
+        );
+
+        // Force logout from every device
+        await AuthRepository.clearRefreshToken(
+            resetToken.user_id
+        );
+
+        const templatePath = path.join(
+            __dirname,
+            "../../mail/templates/passwordChanged.html"
+        );
+
+        let html = fs.readFileSync(templatePath, "utf8");
+
+        html = html.replace("{{NAME}}", user.name);
+
+        await sendMail({
+            to: user.email,
+            subject: "Password Changed Successfully",
+            html
+        });
+
+        // TODO: Activity Log
+
+        return true;
+    }
 }
 module.exports = new AuthService();

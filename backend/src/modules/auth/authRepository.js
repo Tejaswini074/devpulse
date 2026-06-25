@@ -192,7 +192,7 @@ LIMIT 1
         return result;
     }
 
- 
+
     async createPasswordResetToken(data) {
 
         const sql = `
@@ -220,8 +220,9 @@ LIMIT 1
         const sql = `
         SELECT *
         FROM password_reset_tokens
-        WHERE token=?
-        AND used=FALSE
+       WHERE token = ?
+AND used = FALSE
+AND expires_at > NOW()
         LIMIT 1
     `;
         const [rows] = await db.execute(sql, [token]);
@@ -282,7 +283,15 @@ LIMIT 1
         const [result] = await db.execute(sql, [userId]);
         return result;
     }
+    async deletePasswordResetToken(token) {
+        const sql = `
+        DELETE FROM password_reset_tokens
+        WHERE token = ?
+    `;
+        const [result] = await db.execute(sql, [token]);
+        return result;
 
+    }
 }
 
 module.exports = new AuthRepository();
