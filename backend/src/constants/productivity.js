@@ -1,0 +1,13 @@
+module.exports = {
+
+    TARGET_WEEKLY_HOURS: 40,
+
+    TARGET_WEEKLY_COMMITS: 20,
+
+    WEIGHT_TASKS: 40,
+
+    WEIGHT_HOURS: 30,
+
+    WEIGHT_COMMITS: 30
+
+};

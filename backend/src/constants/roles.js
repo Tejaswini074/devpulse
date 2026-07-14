@@ -1,9 +1,13 @@
 module.exports = {
 
+    SUPER_ADMIN: "Super Admin",
+
     ADMIN: "Admin",
 
     MANAGER: "Manager",
 
-    DEVELOPER: "Developer"
+    DEVELOPER: "Developer",
+
+    TESTER: "Tester"
 
 };

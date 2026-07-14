@@ -10,16 +10,11 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const sendMail = async ({ to, subject, html }) => {
-
-    await transporter.sendMail({
-        from: `"DevPulse" <${process.env.MAIL_USER}>`,
-        to,
-        subject,
-        html
+exports.sendMail = async (options) => {
+    return transporter.sendMail({
+        from: process.env.MAIL_FROM,
+        to: options.to,
+        subject: options.subject,
+        html: options.html
     });
-};
-
-module.exports = {
-    sendMail
 };
