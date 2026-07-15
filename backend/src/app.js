@@ -15,6 +15,9 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Health check for platform deploy checks (Railway, etc.) - no DB dependency
+app.get("/health", (req, res) => res.status(200).json({ success: true, message: "ok" }));
+
 // Login Rate Limiter
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
