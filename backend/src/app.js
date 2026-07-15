@@ -7,7 +7,7 @@ const { rateLimit, ipKeyGenerator } = require("express-rate-limit");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(helmet());
 app.use(compression());
 app.use(morgan("dev"));
@@ -28,6 +28,19 @@ const loginLimiter = rateLimit({
     }
 });
 
+// Shared limiter for other public, abuse-prone endpoints (org signup, forgot-password email spam)
+const sensitiveActionLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req) => ipKeyGenerator(req.ip),
+    message: {
+        success: false,
+        message: "Too many attempts. Please try again after 15 minutes."
+    }
+});
+
 const authRoutes = require("./modules/auth");
 const inviteRoutes = require("./modules/invite");
 const userRoutes = require("./modules/users");
@@ -44,6 +57,8 @@ const reportRoutes = require("./modules/reports");
 app.use("/api/invite", inviteRoutes);
 // Apply limiter ONLY to login endpoint
 app.use("/api/auth/login", loginLimiter);
+app.use("/api/auth/register-organization", sensitiveActionLimiter);
+app.use("/api/auth/forgot-password", sensitiveActionLimiter);
 
 // Auth Routes
 app.use("/api/auth", authRoutes);
