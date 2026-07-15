@@ -1,0 +1,68 @@
+<div class="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-10">
+  <div class="w-full max-w-sm">
+    <div class="text-center mb-8">
+      <div class="w-12 h-12 rounded-xl bg-brand-500 flex items-center justify-center font-bold text-white text-xl mx-auto mb-3">D</div>
+      <h1 class="text-xl font-semibold text-slate-900">Create your company</h1>
+      <p class="text-sm text-slate-500 mt-1">Set up your organization and admin account.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="bg-white border border-slate-200 rounded-xl p-6 space-y-4">
+      @if (errorMessage()) {
+        <div class="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{{ errorMessage() }}</div>
+      }
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Organization name</label>
+        <input
+          type="text"
+          formControlName="organization_name"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          placeholder="Acme Inc."
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Your name</label>
+        <input
+          type="text"
+          formControlName="name"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          placeholder="Jane Doe"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+        <input
+          type="email"
+          formControlName="email"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          placeholder="you@company.com"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+        <input
+          type="password"
+          formControlName="password"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          placeholder="At least 8 characters"
+        />
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="loading()"
+        class="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white text-sm font-medium py-2.5 rounded-lg transition-colors"
+      >
+        {{ loading() ? "Creating..." : "Create company" }}
+      </button>
+    </form>
+
+    <p class="text-center text-sm text-slate-500 mt-6">
+      Already have an account?
+      <a routerLink="/login" class="text-brand-600 font-medium hover:underline">Sign in</a>
+    </p>
+  </div>
+</div>

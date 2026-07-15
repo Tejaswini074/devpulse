@@ -1,5 +1,7 @@
 # DevPulse Build Progress
 
+**Status: V1 build complete.** Backend + web app fully built, wired, and browser-verified end-to-end (see "Session 2" section at the bottom). Everything in "What's left" below was finished.
+
 Working log for the Backend + Web V1 build (see full plan at `C:\Users\LENOVO\.claude\plans\cached-dancing-wren.md`).
 Read this file first when resuming — it has everything needed to continue without re-discovering context.
 
@@ -92,3 +94,24 @@ Cron jobs (`node-cron`, newly added dependency): `jobs/githubSync.js` (nightly 1
 - Backend module pattern to copy for any new module: look at `backend/src/modules/teams/` (small, clean example) or `backend/src/modules/projects/` (larger example with sub-resources).
 - All API responses are `{ success, message, data }`; paginated list responses are `{ items, pagination: { page, pageSize, total, totalPages } }` — matches `web/src/app/core/models/api.model.ts`.
 - Today's date during this session was 2026-07-14 (Tuesday).
+
+## Session 2 (2026-07-15) — finished the web app
+
+All remaining items from "What's left" were built and verified:
+
+- `signup.html`, `accept-invite.ts/html`, `forgot-password.ts/html`, `reset-password.ts/html` — all auth pages done.
+- `app.config.ts` wired with `provideHttpClient(withInterceptors([authInterceptor]))`; `app.routes.ts` wired with public routes + an authenticated `Shell`-wrapped parent route (`authGuard`) with role-guarded `/team` and `/admin` children.
+- New feature pages, each following the existing signal + reactive-forms style: `features/dashboard`, `features/projects` (list + detail, with member/milestone management), `features/tasks` (kanban board using `@angular/cdk` drag-drop, 4 columns Todo/In Progress/Testing/Done), `features/daily-logs`, `features/reports`, `features/team`, `features/admin`.
+- New shared component: `shared/components/weekly-chart.ts` — a small standalone Chart.js wrapper (bar+line combo) used by both the dashboard and reports page.
+
+**Important gotcha hit and fixed**: this project's `tsconfig.json` targets `ES2022`, which defaults `useDefineForClassFields` to `true`. That means class field initializers (e.g. `readonly form = this.fb.group(...)`) run *before* constructor-parameter-property assignments (`constructor(private fb: FormBuilder) {}`), so `this.fb` is `undefined` at that point — a real `TS2729` build error, not a lint nitpick. Every component in this app (including the pre-existing `login.ts`/`signup.ts` from session 1, which had never actually been build-verified) now uses `inject()` field initializers instead of constructor-parameter DI, e.g.:
+  ```ts
+  private fb = inject(FormBuilder);
+  private auth = inject(AuthService);
+  readonly form = this.fb.group({ ... }); // safe: fb is already assigned by field-init order
+  ```
+  **Any new component must follow this `inject()` pattern, not constructor-parameter DI** — otherwise `ng build` fails with `TS2729`.
+
+**Browser-verified** via a headless Playwright script (login → dashboard stat cards/chart → projects list → project detail members/milestones → tasks kanban drag-drop → daily log create → reports chart/CSV button → team analytics table → admin user/team management) as both a Manager (`rahul@devpulse.com`) and Admin (`admin@devpulse.com`). Zero console errors, zero failed HTTP requests across the whole flow. `ng build` succeeds (one bundle-size budget warning, not an error).
+
+Not yet done (out of scope for V1, potential follow-ups): no automated tests (Jasmine/Karma specs are all still the CLI-generated defaults), no CSV-export content verification, no mobile/responsive pass, no dark mode.

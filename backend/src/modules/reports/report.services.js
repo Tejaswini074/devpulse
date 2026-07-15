@@ -5,6 +5,11 @@ const { getWeekRange, toISODate } = require("../../utils/dateRange");
 
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+function csvField(value) {
+    const str = value === null || value === undefined ? "" : String(value);
+    return /[",\n\r]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+}
+
 class ReportService {
 
     async weeklyReport(user, reference = new Date()) {
@@ -51,7 +56,7 @@ class ReportService {
         const rows = await DailyLogRepository.findAll(user.organization_id, filters, { limit: 1000, offset: 0 });
 
         const header = ["Date", "Project", "Task", "Type", "Hours", "Status", "Description"];
-        const lines = [header.join(",")];
+        const lines = [header.map(csvField).join(",")];
 
         for (const row of rows) {
             const line = [
@@ -61,8 +66,8 @@ class ReportService {
                 row.log_type,
                 row.hours_worked,
                 row.work_status,
-                `"${(row.work_description || "").replace(/"/g, '""')}"`
-            ].join(",");
+                row.work_description
+            ].map(csvField).join(",");
             lines.push(line);
         }
 

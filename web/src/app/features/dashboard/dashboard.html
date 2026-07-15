@@ -1,0 +1,53 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">Welcome back, {{ auth.currentUser()?.name }}</h1>
+    <p class="text-sm text-slate-500 mt-1">Here's how your work is going this week.</p>
+  </div>
+
+  @if (overview(); as ov) {
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <app-stat-card label="Today" [value]="ov.todayHours + 'h'" icon="clock" color="#4f46e5" bg="#eef2ff" />
+      <app-stat-card label="This week" [value]="ov.weeklyHours + 'h'" icon="clock" color="#0891b2" bg="#ecfeff" />
+      <app-stat-card label="Commits" [value]="ov.commits" icon="github" color="#334155" bg="#f1f5f9" />
+      <app-stat-card label="Tasks done" [value]="ov.completedTasks" icon="check-square" color="#16a34a" bg="#f0fdf4" />
+      <app-stat-card label="Productivity" [value]="ov.productivityScore" icon="bar-chart" color="#ca8a04" bg="#fefce8" />
+    </div>
+  }
+
+  <div class="bg-white rounded-xl border border-slate-200 p-5">
+    <h2 class="text-sm font-semibold text-slate-900 mb-4">This week</h2>
+    @if (weeklyReport(); as report) {
+      <app-weekly-chart [days]="report.days" />
+    } @else if (loading()) {
+      <p class="text-sm text-slate-500">Loading chart...</p>
+    }
+  </div>
+
+  @if (isManager && teamOverview().length) {
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <h2 class="text-sm font-semibold text-slate-900 px-5 pt-5 pb-3">Team overview</h2>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-t border-slate-200 text-left text-slate-500">
+            <th class="px-5 py-2 font-medium">Name</th>
+            <th class="px-5 py-2 font-medium">Hours</th>
+            <th class="px-5 py-2 font-medium">Commits</th>
+            <th class="px-5 py-2 font-medium">Tasks completed</th>
+            <th class="px-5 py-2 font-medium">Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of teamOverview(); track row.user_id) {
+            <tr class="border-t border-slate-100">
+              <td class="px-5 py-2.5 text-slate-900">{{ row.name }}</td>
+              <td class="px-5 py-2.5 text-slate-600">{{ row.hours }}</td>
+              <td class="px-5 py-2.5 text-slate-600">{{ row.commits }}</td>
+              <td class="px-5 py-2.5 text-slate-600">{{ row.completed_tasks }}</td>
+              <td class="px-5 py-2.5 text-slate-600">{{ row.score ?? "—" }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

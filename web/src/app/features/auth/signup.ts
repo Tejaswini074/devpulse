@@ -1,4 +1,4 @@
-import { Component, signal } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
 import { Router, RouterLink } from "@angular/router";
 import { AuthService } from "../../core/services/auth.service";
@@ -9,6 +9,10 @@ import { AuthService } from "../../core/services/auth.service";
   templateUrl: "./signup.html"
 })
 export class Signup {
+  private fb = inject(FormBuilder);
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
   readonly loading = signal(false);
   readonly errorMessage = signal("");
 
@@ -18,8 +22,6 @@ export class Signup {
     email: ["", [Validators.required, Validators.email]],
     password: ["", [Validators.required, Validators.minLength(8)]]
   });
-
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {}
 
   submit(): void {
     if (this.form.invalid) {

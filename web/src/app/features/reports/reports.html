@@ -1,0 +1,57 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900">Reports</h1>
+      <p class="text-sm text-slate-500 mt-1">Your weekly hours and commit activity.</p>
+    </div>
+    <button
+      (click)="export()"
+      [disabled]="exporting()"
+      class="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+    >
+      <app-icon name="download" [size]="16" />
+      {{ exporting() ? "Exporting..." : "Export CSV" }}
+    </button>
+  </div>
+
+  @if (loading()) {
+    <p class="text-sm text-slate-500">Loading report...</p>
+  } @else if (report(); as r) {
+    <div class="bg-white rounded-xl border border-slate-200 p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-slate-900">{{ r.weekStart }} &ndash; {{ r.weekEnd }}</h2>
+        <div class="flex gap-4 text-xs text-slate-500">
+          <span>{{ r.totals.hours }}h total</span>
+          <span>{{ r.totals.commits }} commits</span>
+          <span>{{ r.totals.tasksCompleted }} tasks done</span>
+        </div>
+      </div>
+      <app-weekly-chart [days]="r.days" />
+    </div>
+
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-slate-500">
+            <th class="px-5 py-3 font-medium">Day</th>
+            <th class="px-5 py-3 font-medium">Date</th>
+            <th class="px-5 py-3 font-medium">Hours</th>
+            <th class="px-5 py-3 font-medium">Commits</th>
+            <th class="px-5 py-3 font-medium">Tasks completed</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (day of r.days; track day.date) {
+            <tr class="border-t border-slate-100">
+              <td class="px-5 py-2.5 text-slate-900">{{ day.day }}</td>
+              <td class="px-5 py-2.5 text-slate-500">{{ day.date }}</td>
+              <td class="px-5 py-2.5 text-slate-600">{{ day.hours }}h</td>
+              <td class="px-5 py-2.5 text-slate-600">{{ day.commits }}</td>
+              <td class="px-5 py-2.5 text-slate-600">{{ day.tasksCompleted }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

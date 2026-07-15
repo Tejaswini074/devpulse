@@ -1,0 +1,120 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900">Admin</h1>
+    <p class="text-sm text-slate-500 mt-1">Manage users, invites, and teams.</p>
+  </div>
+
+  <div class="bg-white border border-slate-200 rounded-xl p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-sm font-semibold text-slate-900">Teams</h2>
+      <button (click)="toggleTeamForm()" class="flex items-center gap-1 text-xs font-medium text-brand-600 hover:underline">
+        <app-icon name="plus" [size]="14" />
+        New team
+      </button>
+    </div>
+
+    @if (showTeamForm()) {
+      <form [formGroup]="teamForm" (ngSubmit)="createTeam()" class="flex flex-wrap gap-2 mb-4 items-start">
+        @if (teamError()) {
+          <div class="w-full text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{{ teamError() }}</div>
+        }
+        <input formControlName="team_name" placeholder="Team name" class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+        <input formControlName="description" placeholder="Description" class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg">Create</button>
+      </form>
+    }
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      @for (t of teams(); track t.id) {
+        <div class="border border-slate-100 rounded-lg p-3">
+          <div class="text-sm font-medium text-slate-900">{{ t.team_name }}</div>
+          <div class="text-xs text-slate-500 mt-0.5">{{ t.member_count ?? 0 }} members</div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="bg-white border border-slate-200 rounded-xl p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-sm font-semibold text-slate-900">Users</h2>
+      <button (click)="toggleInviteForm()" class="flex items-center gap-1 text-xs font-medium text-brand-600 hover:underline">
+        <app-icon name="plus" [size]="14" />
+        Invite user
+      </button>
+    </div>
+
+    @if (showInviteForm()) {
+      <form [formGroup]="inviteForm" (ngSubmit)="sendInvite()" class="space-y-3 mb-5 border border-slate-100 rounded-lg p-4">
+        @if (inviteError()) {
+          <div class="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{{ inviteError() }}</div>
+        }
+        @if (inviteMessage()) {
+          <div class="text-sm text-green-700 bg-green-50 border border-green-100 rounded-lg px-3 py-2">{{ inviteMessage() }}</div>
+        }
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input formControlName="name" placeholder="Full name" class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <input type="email" formControlName="email" placeholder="Email" class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <select formControlName="role" class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="Developer">Developer</option>
+            <option value="Tester">Tester</option>
+            <option value="Manager">Manager</option>
+            <option value="Admin">Admin</option>
+          </select>
+          <select formControlName="team_id" class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option [ngValue]="null">No team</option>
+            @for (t of teams(); track t.id) {
+              <option [ngValue]="t.id">{{ t.team_name }}</option>
+            }
+          </select>
+        </div>
+        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg">Send invite</button>
+      </form>
+    }
+
+    @if (loading()) {
+      <p class="text-sm text-slate-500">Loading users...</p>
+    } @else {
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-slate-500">
+            <th class="px-3 py-2 font-medium">Name</th>
+            <th class="px-3 py-2 font-medium">Email</th>
+            <th class="px-3 py-2 font-medium">Role</th>
+            <th class="px-3 py-2 font-medium">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of users(); track u.id) {
+            <tr class="border-t border-slate-100">
+              <td class="px-3 py-2.5 text-slate-900 font-medium">{{ u.name }}</td>
+              <td class="px-3 py-2.5 text-slate-500">{{ u.email }}</td>
+              <td class="px-3 py-2.5">
+                <select
+                  [value]="u.role"
+                  (change)="updateUserRole(u.id, $any($event.target).value)"
+                  class="rounded-lg border border-slate-300 px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500"
+                >
+                  <option value="Developer">Developer</option>
+                  <option value="Tester">Tester</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Super Admin">Super Admin</option>
+                </select>
+              </td>
+              <td class="px-3 py-2.5">
+                <select
+                  [value]="u.status"
+                  (change)="updateUserStatus(u.id, $any($event.target).value)"
+                  class="rounded-lg border border-slate-300 px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
