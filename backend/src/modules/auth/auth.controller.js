@@ -60,7 +60,7 @@ class AuthController {
             return Response.error(
                 res,
                 error.message || MSG.INTERNAL_SERVER_ERROR,
-                500
+                401
             );
         }
     }
