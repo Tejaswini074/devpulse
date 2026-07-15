@@ -1,6 +1,8 @@
-import { Component, computed } from "@angular/core";
-import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
+import { Component, computed, inject, signal } from "@angular/core";
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
+import { filter } from "rxjs";
 import { AuthService } from "../../core/services/auth.service";
+import { ThemeService } from "../../core/services/theme.service";
 import { Icon } from "../components/icon";
 
 interface NavItem {
@@ -26,13 +28,33 @@ const NAV_ITEMS: NavItem[] = [
   templateUrl: "./shell.html"
 })
 export class Shell {
-  readonly navItems = NAV_ITEMS;
+  protected auth = inject(AuthService);
+  protected themeService = inject(ThemeService);
+  private router = inject(Router);
 
-  constructor(protected auth: AuthService) {}
+  readonly navItems = NAV_ITEMS;
+  readonly sidebarOpen = signal(false);
+  readonly theme = this.themeService.theme;
+
+  constructor() {
+    this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => this.sidebarOpen.set(false));
+  }
 
   readonly visibleNavItems = computed(() =>
     this.navItems.filter((item) => !item.roles || this.auth.hasAnyRole(item.roles))
   );
+
+  toggleTheme(): void {
+    this.themeService.toggle();
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpen.set(!this.sidebarOpen());
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen.set(false);
+  }
 
   logout(): void {
     this.auth.logout();

@@ -1,52 +1,52 @@
 @if (loading()) {
-  <p class="text-sm text-slate-500">Loading project...</p>
+  <p class="text-sm text-slate-500 dark:text-slate-400">Loading project...</p>
 } @else if (project(); as p) {
   <div class="space-y-6">
     <div>
-      <a routerLink="/projects" class="text-xs text-brand-600 hover:underline">&larr; Back to projects</a>
-      <div class="flex items-center justify-between mt-2">
+      <a routerLink="/projects" class="text-xs text-brand-600 dark:text-brand-400 hover:underline">&larr; Back to projects</a>
+      <div class="flex flex-wrap items-center justify-between gap-3 mt-2">
         <div>
-          <span class="text-xs font-mono text-slate-400">{{ p.project_code }}</span>
-          <h1 class="text-xl font-semibold text-slate-900">{{ p.project_name }}</h1>
+          <span class="text-xs font-mono text-slate-400 dark:text-slate-500">{{ p.project_code }}</span>
+          <h1 class="text-xl font-semibold text-slate-900 dark:text-slate-100">{{ p.project_name }}</h1>
         </div>
-        <a [routerLink]="['/tasks']" [queryParams]="{ project_id: p.id }" class="text-sm font-medium text-brand-600 hover:underline">View tasks &rarr;</a>
+        <a [routerLink]="['/tasks']" [queryParams]="{ project_id: p.id }" class="text-sm font-medium text-brand-600 dark:text-brand-400 hover:underline">View tasks &rarr;</a>
       </div>
       @if (p.description) {
-        <p class="text-sm text-slate-500 mt-2">{{ p.description }}</p>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">{{ p.description }}</p>
       }
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-white border border-slate-200 rounded-xl p-4">
-        <div class="text-xs text-slate-500">Status</div>
-        <div class="text-sm font-semibold text-slate-900 mt-1">{{ p.status }}</div>
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+        <div class="text-xs text-slate-500 dark:text-slate-400">Status</div>
+        <div class="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-1">{{ p.status }}</div>
       </div>
-      <div class="bg-white border border-slate-200 rounded-xl p-4">
-        <div class="text-xs text-slate-500">Priority</div>
-        <div class="text-sm font-semibold text-slate-900 mt-1">{{ p.priority }}</div>
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+        <div class="text-xs text-slate-500 dark:text-slate-400">Priority</div>
+        <div class="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-1">{{ p.priority }}</div>
       </div>
-      <div class="bg-white border border-slate-200 rounded-xl p-4">
-        <div class="text-xs text-slate-500">Progress</div>
-        <div class="text-sm font-semibold text-slate-900 mt-1">{{ p.progress }}%</div>
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+        <div class="text-xs text-slate-500 dark:text-slate-400">Progress</div>
+        <div class="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-1">{{ p.progress }}%</div>
       </div>
-      <div class="bg-white border border-slate-200 rounded-xl p-4">
-        <div class="text-xs text-slate-500">Tasks</div>
-        <div class="text-sm font-semibold text-slate-900 mt-1">{{ p.completed_task_count ?? 0 }}/{{ p.task_count ?? 0 }}</div>
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+        <div class="text-xs text-slate-500 dark:text-slate-400">Tasks</div>
+        <div class="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-1">{{ p.completed_task_count ?? 0 }}/{{ p.task_count ?? 0 }}</div>
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="bg-white border border-slate-200 rounded-xl p-5">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-sm font-semibold text-slate-900">Members</h2>
+          <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Members</h2>
           @if (canManage) {
-            <button (click)="showMemberForm.set(!showMemberForm())" class="text-xs font-medium text-brand-600 hover:underline">+ Add member</button>
+            <button (click)="showMemberForm.set(!showMemberForm())" class="text-xs font-medium text-brand-600 dark:text-brand-400 hover:underline">+ Add member</button>
           }
         </div>
 
         @if (showMemberForm()) {
           <form [formGroup]="memberForm" (ngSubmit)="addMember()" class="flex gap-2 mb-4">
-            <select formControlName="user_id" class="flex-1 rounded-lg border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <select formControlName="user_id" class="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
               <option [ngValue]="null" disabled>Select user</option>
               @for (u of orgUsers(); track u.id) {
                 @if (!memberIds().has(u.id)) {
@@ -59,17 +59,17 @@
         }
 
         @if (!p.members?.length) {
-          <p class="text-sm text-slate-500">No members yet.</p>
+          <p class="text-sm text-slate-500 dark:text-slate-400">No members yet.</p>
         } @else {
           <ul class="space-y-2">
             @for (m of p.members; track m.id) {
               <li class="flex items-center justify-between text-sm">
                 <div>
-                  <span class="text-slate-900 font-medium">{{ m.name }}</span>
-                  <span class="text-slate-400 text-xs ml-1">{{ m.member_role }}</span>
+                  <span class="text-slate-900 dark:text-slate-100 font-medium">{{ m.name }}</span>
+                  <span class="text-slate-400 dark:text-slate-500 text-xs ml-1">{{ m.member_role }}</span>
                 </div>
                 @if (canManage) {
-                  <button (click)="removeMember(m.user_id)" class="text-slate-400 hover:text-red-600">
+                  <button (click)="removeMember(m.user_id)" class="text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400">
                     <app-icon name="trash" [size]="14" />
                   </button>
                 }
@@ -79,37 +79,37 @@
         }
       </div>
 
-      <div class="bg-white border border-slate-200 rounded-xl p-5">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-sm font-semibold text-slate-900">Milestones</h2>
+          <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Milestones</h2>
           @if (canManage) {
-            <button (click)="showMilestoneForm.set(!showMilestoneForm())" class="text-xs font-medium text-brand-600 hover:underline">+ Add milestone</button>
+            <button (click)="showMilestoneForm.set(!showMilestoneForm())" class="text-xs font-medium text-brand-600 dark:text-brand-400 hover:underline">+ Add milestone</button>
           }
         </div>
 
         @if (showMilestoneForm()) {
           <form [formGroup]="milestoneForm" (ngSubmit)="addMilestone()" class="space-y-2 mb-4">
-            <input formControlName="title" placeholder="Title" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
-            <input type="date" formControlName="target_date" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            <input formControlName="title" placeholder="Title" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            <input type="date" formControlName="target_date" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg">Add milestone</button>
           </form>
         }
 
         @if (!milestones().length) {
-          <p class="text-sm text-slate-500">No milestones yet.</p>
+          <p class="text-sm text-slate-500 dark:text-slate-400">No milestones yet.</p>
         } @else {
           <ul class="space-y-2">
             @for (m of milestones(); track m.id) {
               <li class="flex items-center justify-between text-sm">
                 <div class="flex items-center gap-2">
                   <input type="checkbox" [checked]="m.status === 'Completed'" (change)="toggleMilestone(m)" [disabled]="!canManage" />
-                  <span [class.line-through]="m.status === 'Completed'" [class.text-slate-400]="m.status === 'Completed'" class="text-slate-900">{{ m.title }}</span>
+                  <span [class.line-through]="m.status === 'Completed'" [class.text-slate-400]="m.status === 'Completed'" class="text-slate-900 dark:text-slate-100">{{ m.title }}</span>
                   @if (m.target_date) {
-                    <span class="text-xs text-slate-400">{{ m.target_date }}</span>
+                    <span class="text-xs text-slate-400 dark:text-slate-500">{{ m.target_date }}</span>
                   }
                 </div>
                 @if (canManage) {
-                  <button (click)="removeMilestone(m.id)" class="text-slate-400 hover:text-red-600">
+                  <button (click)="removeMilestone(m.id)" class="text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400">
                     <app-icon name="trash" [size]="14" />
                   </button>
                 }

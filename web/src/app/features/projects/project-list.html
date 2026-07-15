@@ -1,8 +1,8 @@
 <div class="space-y-6">
-  <div class="flex items-center justify-between">
+  <div class="flex flex-wrap items-center justify-between gap-3">
     <div>
-      <h1 class="text-xl font-semibold text-slate-900">Projects</h1>
-      <p class="text-sm text-slate-500 mt-1">All projects in your organization.</p>
+      <h1 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Projects</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">All projects in your organization.</p>
     </div>
     @if (canManage) {
       <button
@@ -16,19 +16,19 @@
   </div>
 
   @if (showForm()) {
-    <form [formGroup]="form" (ngSubmit)="submit()" class="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+    <form [formGroup]="form" (ngSubmit)="submit()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 space-y-4">
       @if (errorMessage()) {
-        <div class="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{{ errorMessage() }}</div>
+        <div class="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 rounded-lg px-3 py-2">{{ errorMessage() }}</div>
       }
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Project name</label>
-          <input formControlName="project_name" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Project name</label>
+          <input formControlName="project_name" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Project manager</label>
-          <select formControlName="project_manager" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Project manager</label>
+          <select formControlName="project_manager" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
             <option [ngValue]="null" disabled>Select manager</option>
             @for (m of managers(); track m.id) {
               <option [ngValue]="m.id">{{ m.name }}</option>
@@ -36,16 +36,16 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Type</label>
-          <select formControlName="project_type" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Type</label>
+          <select formControlName="project_type" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
             <option value="Internal">Internal</option>
             <option value="Client">Client</option>
             <option value="Research">Research</option>
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Priority</label>
-          <select formControlName="priority" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Priority</label>
+          <select formControlName="priority" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
@@ -53,27 +53,27 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">Client name</label>
-          <input formControlName="client_name" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Client name</label>
+          <input formControlName="client_name" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Start date</label>
-            <input type="date" formControlName="start_date" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Start date</label>
+            <input type="date" formControlName="start_date" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">End date</label>
-            <input type="date" formControlName="end_date" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">End date</label>
+            <input type="date" formControlName="end_date" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
         </div>
         <div class="md:col-span-2">
-          <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
-          <textarea formControlName="description" rows="2" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
+          <textarea formControlName="description" rows="2" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
         </div>
       </div>
 
       <div class="flex justify-end gap-2">
-        <button type="button" (click)="toggleForm()" class="text-sm font-medium px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100">Cancel</button>
+        <button type="button" (click)="toggleForm()" class="text-sm font-medium px-4 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
         <button
           type="submit"
           [disabled]="submitting()"
@@ -86,34 +86,34 @@
   }
 
   @if (loading()) {
-    <p class="text-sm text-slate-500">Loading projects...</p>
+    <p class="text-sm text-slate-500 dark:text-slate-400">Loading projects...</p>
   } @else if (!projects().length) {
-    <div class="bg-white border border-slate-200 rounded-xl p-8 text-center text-sm text-slate-500">No projects yet.</div>
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center text-sm text-slate-500 dark:text-slate-400">No projects yet.</div>
   } @else {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       @for (project of projects(); track project.id) {
         <a
           [routerLink]="['/projects', project.id]"
-          class="block bg-white border border-slate-200 rounded-xl p-5 hover:border-brand-300 hover:shadow-sm transition-all"
+          class="block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 hover:border-brand-300 dark:hover:border-brand-600 hover:shadow-sm transition-all"
         >
           <div class="flex items-start justify-between mb-2">
-            <span class="text-xs font-mono text-slate-400">{{ project.project_code }}</span>
+            <span class="text-xs font-mono text-slate-400 dark:text-slate-500">{{ project.project_code }}</span>
             <span class="text-xs font-medium px-2 py-0.5 rounded-full border" [class]="statusColor(project.status)">{{ project.status }}</span>
           </div>
-          <h3 class="font-semibold text-slate-900">{{ project.project_name }}</h3>
+          <h3 class="font-semibold text-slate-900 dark:text-slate-100">{{ project.project_name }}</h3>
           @if (project.client_name) {
-            <p class="text-xs text-slate-500 mt-0.5">{{ project.client_name }}</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ project.client_name }}</p>
           }
           <div class="mt-4">
-            <div class="flex items-center justify-between text-xs text-slate-500 mb-1">
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
               <span>Progress</span>
               <span>{{ project.progress }}%</span>
             </div>
-            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
               <div class="h-full bg-brand-500 rounded-full" [style.width.%]="project.progress"></div>
             </div>
           </div>
-          <div class="flex items-center justify-between text-xs text-slate-500 mt-4">
+          <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mt-4">
             <span>{{ project.completed_task_count ?? 0 }}/{{ project.task_count ?? 0 }} tasks</span>
             <span>{{ project.project_manager_name }}</span>
           </div>

@@ -107,10 +107,10 @@ export class TaskBoard implements OnInit {
 
   priorityColor(priority: string): string {
     switch (priority) {
-      case "Critical": return "bg-red-50 text-red-700";
-      case "High": return "bg-orange-50 text-orange-700";
-      case "Medium": return "bg-amber-50 text-amber-700";
-      default: return "bg-slate-50 text-slate-600";
+      case "Critical": return "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400";
+      case "High": return "bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400";
+      case "Medium": return "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400";
+      default: return "bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300";
     }
   }
 }

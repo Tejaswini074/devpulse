@@ -81,11 +81,11 @@ export class ProjectList implements OnInit {
 
   statusColor(status: string): string {
     switch (status) {
-      case "Active": return "bg-green-50 text-green-700 border-green-100";
-      case "Completed": return "bg-blue-50 text-blue-700 border-blue-100";
-      case "On Hold": return "bg-amber-50 text-amber-700 border-amber-100";
-      case "Cancelled": return "bg-red-50 text-red-700 border-red-100";
-      default: return "bg-slate-50 text-slate-700 border-slate-200";
+      case "Active": return "bg-green-50 text-green-700 border-green-100 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20";
+      case "Completed": return "bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20";
+      case "On Hold": return "bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20";
+      case "Cancelled": return "bg-red-50 text-red-700 border-red-100 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20";
+      default: return "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700";
     }
   }
 }

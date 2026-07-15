@@ -1,34 +1,35 @@
 <div class="space-y-6">
   <div>
-    <h1 class="text-xl font-semibold text-slate-900">Welcome back, {{ auth.currentUser()?.name }}</h1>
-    <p class="text-sm text-slate-500 mt-1">Here's how your work is going this week.</p>
+    <h1 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Welcome back, {{ auth.currentUser()?.name }}</h1>
+    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Here's how your work is going this week.</p>
   </div>
 
   @if (overview(); as ov) {
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-      <app-stat-card label="Today" [value]="ov.todayHours + 'h'" icon="clock" color="#4f46e5" bg="#eef2ff" />
-      <app-stat-card label="This week" [value]="ov.weeklyHours + 'h'" icon="clock" color="#0891b2" bg="#ecfeff" />
-      <app-stat-card label="Commits" [value]="ov.commits" icon="github" color="#334155" bg="#f1f5f9" />
-      <app-stat-card label="Tasks done" [value]="ov.completedTasks" icon="check-square" color="#16a34a" bg="#f0fdf4" />
-      <app-stat-card label="Productivity" [value]="ov.productivityScore" icon="bar-chart" color="#ca8a04" bg="#fefce8" />
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+      <app-stat-card label="Today" [value]="ov.todayHours + 'h'" icon="clock" tone="indigo" />
+      <app-stat-card label="This week" [value]="ov.weeklyHours + 'h'" icon="clock" tone="cyan" />
+      <app-stat-card label="Commits" [value]="ov.commits" icon="github" tone="slate" />
+      <app-stat-card label="Tasks done" [value]="ov.completedTasks" icon="check-square" tone="green" />
+      <app-stat-card label="Productivity" [value]="ov.productivityScore" icon="bar-chart" tone="amber" />
     </div>
   }
 
-  <div class="bg-white rounded-xl border border-slate-200 p-5">
-    <h2 class="text-sm font-semibold text-slate-900 mb-4">This week</h2>
+  <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+    <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">This week</h2>
     @if (weeklyReport(); as report) {
       <app-weekly-chart [days]="report.days" />
     } @else if (loading()) {
-      <p class="text-sm text-slate-500">Loading chart...</p>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Loading chart...</p>
     }
   </div>
 
   @if (isManager && teamOverview().length) {
-    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      <h2 class="text-sm font-semibold text-slate-900 px-5 pt-5 pb-3">Team overview</h2>
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+      <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100 px-5 pt-5 pb-3">Team overview</h2>
+      <div class="overflow-x-auto">
       <table class="w-full text-sm">
         <thead>
-          <tr class="border-t border-slate-200 text-left text-slate-500">
+          <tr class="border-t border-slate-200 dark:border-slate-800 text-left text-slate-500 dark:text-slate-400">
             <th class="px-5 py-2 font-medium">Name</th>
             <th class="px-5 py-2 font-medium">Hours</th>
             <th class="px-5 py-2 font-medium">Commits</th>
@@ -38,16 +39,17 @@
         </thead>
         <tbody>
           @for (row of teamOverview(); track row.user_id) {
-            <tr class="border-t border-slate-100">
-              <td class="px-5 py-2.5 text-slate-900">{{ row.name }}</td>
-              <td class="px-5 py-2.5 text-slate-600">{{ row.hours }}</td>
-              <td class="px-5 py-2.5 text-slate-600">{{ row.commits }}</td>
-              <td class="px-5 py-2.5 text-slate-600">{{ row.completed_tasks }}</td>
-              <td class="px-5 py-2.5 text-slate-600">{{ row.score ?? "—" }}</td>
+            <tr class="border-t border-slate-100 dark:border-slate-800">
+              <td class="px-5 py-2.5 text-slate-900 dark:text-slate-100">{{ row.name }}</td>
+              <td class="px-5 py-2.5 text-slate-600 dark:text-slate-400">{{ row.hours }}</td>
+              <td class="px-5 py-2.5 text-slate-600 dark:text-slate-400">{{ row.commits }}</td>
+              <td class="px-5 py-2.5 text-slate-600 dark:text-slate-400">{{ row.completed_tasks }}</td>
+              <td class="px-5 py-2.5 text-slate-600 dark:text-slate-400">{{ row.score ?? "—" }}</td>
             </tr>
           }
         </tbody>
       </table>
+      </div>
     </div>
   }
 </div>

@@ -1,8 +1,8 @@
 <div class="space-y-6">
-  <div class="flex items-center justify-between">
+  <div class="flex flex-wrap items-center justify-between gap-3">
     <div>
-      <h1 class="text-xl font-semibold text-slate-900">Reports</h1>
-      <p class="text-sm text-slate-500 mt-1">Your weekly hours and commit activity.</p>
+      <h1 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Reports</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Your weekly hours and commit activity.</p>
     </div>
     <button
       (click)="export()"
@@ -15,12 +15,12 @@
   </div>
 
   @if (loading()) {
-    <p class="text-sm text-slate-500">Loading report...</p>
+    <p class="text-sm text-slate-500 dark:text-slate-400">Loading report...</p>
   } @else if (report(); as r) {
-    <div class="bg-white rounded-xl border border-slate-200 p-5">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-sm font-semibold text-slate-900">{{ r.weekStart }} &ndash; {{ r.weekEnd }}</h2>
-        <div class="flex gap-4 text-xs text-slate-500">
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">{{ r.weekStart }} &ndash; {{ r.weekEnd }}</h2>
+        <div class="flex gap-4 text-xs text-slate-500 dark:text-slate-400">
           <span>{{ r.totals.hours }}h total</span>
           <span>{{ r.totals.commits }} commits</span>
           <span>{{ r.totals.tasksCompleted }} tasks done</span>
@@ -29,10 +29,10 @@
       <app-weekly-chart [days]="r.days" />
     </div>
 
-    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-x-auto">
       <table class="w-full text-sm">
         <thead>
-          <tr class="text-left text-slate-500">
+          <tr class="text-left text-slate-500 dark:text-slate-400">
             <th class="px-5 py-3 font-medium">Day</th>
             <th class="px-5 py-3 font-medium">Date</th>
             <th class="px-5 py-3 font-medium">Hours</th>
@@ -42,12 +42,12 @@
         </thead>
         <tbody>
           @for (day of r.days; track day.date) {
-            <tr class="border-t border-slate-100">
-              <td class="px-5 py-2.5 text-slate-900">{{ day.day }}</td>
-              <td class="px-5 py-2.5 text-slate-500">{{ day.date }}</td>
-              <td class="px-5 py-2.5 text-slate-600">{{ day.hours }}h</td>
-              <td class="px-5 py-2.5 text-slate-600">{{ day.commits }}</td>
-              <td class="px-5 py-2.5 text-slate-600">{{ day.tasksCompleted }}</td>
+            <tr class="border-t border-slate-100 dark:border-slate-800">
+              <td class="px-5 py-2.5 text-slate-900 dark:text-slate-100">{{ day.day }}</td>
+              <td class="px-5 py-2.5 text-slate-500 dark:text-slate-400">{{ day.date }}</td>
+              <td class="px-5 py-2.5 text-slate-600 dark:text-slate-400">{{ day.hours }}h</td>
+              <td class="px-5 py-2.5 text-slate-600 dark:text-slate-400">{{ day.commits }}</td>
+              <td class="px-5 py-2.5 text-slate-600 dark:text-slate-400">{{ day.tasksCompleted }}</td>
             </tr>
           }
         </tbody>
