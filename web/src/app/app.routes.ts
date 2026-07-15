@@ -2,40 +2,35 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 import { Shell } from './shared/layout/shell';
-import { Login } from './features/auth/login';
-import { Signup } from './features/auth/signup';
-import { AcceptInvite } from './features/auth/accept-invite';
-import { ForgotPassword } from './features/auth/forgot-password';
-import { ResetPassword } from './features/auth/reset-password';
-import { Dashboard } from './features/dashboard/dashboard';
-import { ProjectList } from './features/projects/project-list';
-import { ProjectDetail } from './features/projects/project-detail';
-import { TaskBoard } from './features/tasks/task-board';
-import { DailyLogList } from './features/daily-logs/daily-log-list';
-import { Reports } from './features/reports/reports';
-import { TeamPage } from './features/team/team';
-import { Admin } from './features/admin/admin';
 
 export const routes: Routes = [
-  { path: 'login', component: Login },
-  { path: 'signup', component: Signup },
-  { path: 'accept-invite/:token', component: AcceptInvite },
-  { path: 'forgot-password', component: ForgotPassword },
-  { path: 'reset-password/:token', component: ResetPassword },
+  { path: 'login', loadComponent: () => import('./features/auth/login').then((m) => m.Login) },
+  { path: 'signup', loadComponent: () => import('./features/auth/signup').then((m) => m.Signup) },
+  { path: 'accept-invite/:token', loadComponent: () => import('./features/auth/accept-invite').then((m) => m.AcceptInvite) },
+  { path: 'forgot-password', loadComponent: () => import('./features/auth/forgot-password').then((m) => m.ForgotPassword) },
+  { path: 'reset-password/:token', loadComponent: () => import('./features/auth/reset-password').then((m) => m.ResetPassword) },
   {
     path: '',
     component: Shell,
     canActivate: [authGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
-      { path: 'dashboard', component: Dashboard },
-      { path: 'projects', component: ProjectList },
-      { path: 'projects/:id', component: ProjectDetail },
-      { path: 'tasks', component: TaskBoard },
-      { path: 'daily-logs', component: DailyLogList },
-      { path: 'reports', component: Reports },
-      { path: 'team', component: TeamPage, canActivate: [roleGuard(['Admin', 'Super Admin', 'Manager'])] },
-      { path: 'admin', component: Admin, canActivate: [roleGuard(['Admin', 'Super Admin'])] }
+      { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard) },
+      { path: 'projects', loadComponent: () => import('./features/projects/project-list').then((m) => m.ProjectList) },
+      { path: 'projects/:id', loadComponent: () => import('./features/projects/project-detail').then((m) => m.ProjectDetail) },
+      { path: 'tasks', loadComponent: () => import('./features/tasks/task-board').then((m) => m.TaskBoard) },
+      { path: 'daily-logs', loadComponent: () => import('./features/daily-logs/daily-log-list').then((m) => m.DailyLogList) },
+      { path: 'reports', loadComponent: () => import('./features/reports/reports').then((m) => m.Reports) },
+      {
+        path: 'team',
+        loadComponent: () => import('./features/team/team').then((m) => m.TeamPage),
+        canActivate: [roleGuard(['Admin', 'Super Admin', 'Manager'])]
+      },
+      {
+        path: 'admin',
+        loadComponent: () => import('./features/admin/admin').then((m) => m.Admin),
+        canActivate: [roleGuard(['Admin', 'Super Admin'])]
+      }
     ]
   },
   { path: '**', redirectTo: 'dashboard' }
