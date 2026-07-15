@@ -4,7 +4,7 @@
     <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage users, invites, and teams.</p>
   </div>
 
-  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-none">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Teams</h2>
       <button (click)="toggleTeamForm()" class="flex items-center gap-1 text-xs font-medium text-brand-600 dark:text-brand-400 hover:underline">
@@ -20,13 +20,13 @@
         }
         <input formControlName="team_name" placeholder="Team name" class="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
         <input formControlName="description" placeholder="Description" class="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
-        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg">Create</button>
+        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-sm shadow-brand-600/25 hover:shadow-md hover:shadow-brand-600/30 transition-all">Create</button>
       </form>
     }
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
       @for (t of teams(); track t.id) {
-        <div class="border border-slate-100 dark:border-slate-800 rounded-lg p-3">
+        <div class="border border-slate-100 dark:border-slate-800 rounded-lg p-3 transition-colors hover:border-brand-200 dark:hover:border-brand-800 hover:bg-brand-50/40 dark:hover:bg-brand-500/5">
           <div class="text-sm font-medium text-slate-900 dark:text-slate-100">{{ t.team_name }}</div>
           <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ t.member_count ?? 0 }} members</div>
         </div>
@@ -34,7 +34,7 @@
     </div>
   </div>
 
-  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-none">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Users</h2>
       <button (click)="toggleInviteForm()" class="flex items-center gap-1 text-xs font-medium text-brand-600 dark:text-brand-400 hover:underline">
@@ -67,7 +67,7 @@
             }
           </select>
         </div>
-        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg">Send invite</button>
+        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm shadow-brand-600/25 hover:shadow-md hover:shadow-brand-600/30 transition-all">Send invite</button>
       </form>
     }
 
@@ -86,7 +86,7 @@
         </thead>
         <tbody>
           @for (u of users(); track u.id) {
-            <tr class="border-t border-slate-100 dark:border-slate-800">
+            <tr class="border-t border-slate-100 dark:border-slate-800 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
               <td class="px-3 py-2.5 text-slate-900 dark:text-slate-100 font-medium">{{ u.name }}</td>
               <td class="px-3 py-2.5 text-slate-500 dark:text-slate-400">{{ u.email }}</td>
               <td class="px-3 py-2.5">

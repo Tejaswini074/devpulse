@@ -2,6 +2,7 @@ import { Component, inject, signal } from "@angular/core";
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { AuthService } from "../../core/services/auth.service";
+import { AuthShell } from "../../shared/layout/auth-shell";
 
 function passwordsMatch(control: AbstractControl): ValidationErrors | null {
   const password = control.get("password")?.value;
@@ -11,7 +12,7 @@ function passwordsMatch(control: AbstractControl): ValidationErrors | null {
 
 @Component({
   selector: "app-reset-password",
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AuthShell],
   templateUrl: "./reset-password.html"
 })
 export class ResetPassword {

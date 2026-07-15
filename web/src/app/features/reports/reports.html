@@ -7,7 +7,7 @@
     <button
       (click)="export()"
       [disabled]="exporting()"
-      class="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+      class="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm shadow-brand-600/25 hover:shadow-md hover:shadow-brand-600/30 transition-all"
     >
       <app-icon name="download" [size]="16" />
       {{ exporting() ? "Exporting..." : "Export CSV" }}
@@ -17,7 +17,7 @@
   @if (loading()) {
     <p class="text-sm text-slate-500 dark:text-slate-400">Loading report...</p>
   } @else if (report(); as r) {
-    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm shadow-slate-200/50 dark:shadow-none p-5">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
         <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">{{ r.weekStart }} &ndash; {{ r.weekEnd }}</h2>
         <div class="flex gap-4 text-xs text-slate-500 dark:text-slate-400">
@@ -29,7 +29,7 @@
       <app-weekly-chart [days]="r.days" />
     </div>
 
-    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-x-auto">
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm shadow-slate-200/50 dark:shadow-none overflow-x-auto">
       <table class="w-full text-sm">
         <thead>
           <tr class="text-left text-slate-500 dark:text-slate-400">
@@ -42,7 +42,7 @@
         </thead>
         <tbody>
           @for (day of r.days; track day.date) {
-            <tr class="border-t border-slate-100 dark:border-slate-800">
+            <tr class="border-t border-slate-100 dark:border-slate-800 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50">
               <td class="px-5 py-2.5 text-slate-900 dark:text-slate-100">{{ day.day }}</td>
               <td class="px-5 py-2.5 text-slate-500 dark:text-slate-400">{{ day.date }}</td>
               <td class="px-5 py-2.5 text-slate-600 dark:text-slate-400">{{ day.hours }}h</td>

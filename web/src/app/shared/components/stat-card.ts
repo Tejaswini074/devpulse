@@ -4,27 +4,27 @@ import { Icon } from "./icon";
 export type StatCardTone = "indigo" | "cyan" | "slate" | "green" | "amber";
 
 const TONE_CLASSES: Record<StatCardTone, string> = {
-  indigo: "bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400",
-  cyan: "bg-cyan-50 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-400",
-  slate: "bg-slate-100 text-slate-700 dark:bg-slate-500/10 dark:text-slate-300",
-  green: "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
-  amber: "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"
+  indigo: "bg-linear-to-br from-brand-500 to-brand-600 shadow-brand-500/25",
+  cyan: "bg-linear-to-br from-cyan-500 to-cyan-600 shadow-cyan-500/25",
+  slate: "bg-linear-to-br from-slate-600 to-slate-700 shadow-slate-500/25",
+  green: "bg-linear-to-br from-green-500 to-green-600 shadow-green-500/25",
+  amber: "bg-linear-to-br from-amber-500 to-amber-600 shadow-amber-500/25"
 };
 
 @Component({
   selector: "app-stat-card",
   imports: [Icon],
   template: `
-    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 flex items-start justify-between">
+    <div class="group bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 flex items-start justify-between transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-200/70 dark:hover:shadow-none dark:hover:border-slate-700">
       <div>
         <div class="text-sm text-slate-500 dark:text-slate-400 font-medium">{{ label }}</div>
-        <div class="text-2xl font-semibold text-slate-900 dark:text-slate-100 mt-1">{{ value }}</div>
+        <div class="text-2xl font-semibold text-slate-900 dark:text-slate-100 mt-1 tracking-tight">{{ value }}</div>
         @if (sublabel) {
           <div class="text-xs text-slate-400 dark:text-slate-500 mt-1">{{ sublabel }}</div>
         }
       </div>
-      <div class="w-10 h-10 rounded-lg flex items-center justify-center" [class]="toneClasses">
-        <app-icon [name]="icon" [size]="20" />
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-md transition-transform duration-200 group-hover:scale-105" [class]="toneClasses">
+        <app-icon [name]="icon" [size]="19" />
       </div>
     </div>
   `

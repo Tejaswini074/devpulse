@@ -2,10 +2,11 @@ import { Component, OnInit, inject, signal } from "@angular/core";
 import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { InviteService } from "../../core/services/invite.service";
+import { AuthShell } from "../../shared/layout/auth-shell";
 
 @Component({
   selector: "app-accept-invite",
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AuthShell],
   templateUrl: "./accept-invite.html"
 })
 export class AcceptInvite implements OnInit {

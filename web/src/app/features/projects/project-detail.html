@@ -17,26 +17,26 @@
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm shadow-slate-200/50 dark:shadow-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-slate-200/70 dark:hover:shadow-none">
         <div class="text-xs text-slate-500 dark:text-slate-400">Status</div>
         <div class="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-1">{{ p.status }}</div>
       </div>
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm shadow-slate-200/50 dark:shadow-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-slate-200/70 dark:hover:shadow-none">
         <div class="text-xs text-slate-500 dark:text-slate-400">Priority</div>
         <div class="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-1">{{ p.priority }}</div>
       </div>
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm shadow-slate-200/50 dark:shadow-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-slate-200/70 dark:hover:shadow-none">
         <div class="text-xs text-slate-500 dark:text-slate-400">Progress</div>
         <div class="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-1">{{ p.progress }}%</div>
       </div>
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm shadow-slate-200/50 dark:shadow-none transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-slate-200/70 dark:hover:shadow-none">
         <div class="text-xs text-slate-500 dark:text-slate-400">Tasks</div>
         <div class="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-1">{{ p.completed_task_count ?? 0 }}/{{ p.task_count ?? 0 }}</div>
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-none">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Members</h2>
           @if (canManage) {
@@ -54,7 +54,7 @@
                 }
               }
             </select>
-            <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg">Add</button>
+            <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-sm shadow-brand-600/25 hover:shadow-md hover:shadow-brand-600/30 transition-all">Add</button>
           </form>
         }
 
@@ -79,7 +79,7 @@
         }
       </div>
 
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-none">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Milestones</h2>
           @if (canManage) {
@@ -91,7 +91,7 @@
           <form [formGroup]="milestoneForm" (ngSubmit)="addMilestone()" class="space-y-2 mb-4">
             <input formControlName="title" placeholder="Title" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             <input type="date" formControlName="target_date" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
-            <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg">Add milestone</button>
+            <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-sm shadow-brand-600/25 hover:shadow-md hover:shadow-brand-600/30 transition-all">Add milestone</button>
           </form>
         }
 
