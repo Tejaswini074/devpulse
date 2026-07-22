@@ -152,9 +152,12 @@ Web (`web/src/app/`):
 
 **Verified 2026-07-22**: `ng build` clean (no budget warnings), backend `npm test` 82/82 passing (up from 38 — new suites for comments/attachments/notifications/sprints/leave/settings, but **`calendar` and `activityLogs` still have no backend tests**), frontend `ng test` 58/58 passing (up from 35 — new specs for attachment/comment/leave/notification/settings/sprint services, but **no component-level specs yet** for `leave` page, `task-detail`, `notification-bell`, `modal`, `toast-container`). This whole batch was built on top of the V1 work above but had never been committed — verified green here before committing.
 
-**Not yet done**:
-- Backend tests for `calendar` and `activityLogs` modules.
-- Frontend component specs for the new V2 UI (leave page, task-detail modal, notification-bell, modal, toast-container, empty-state, tabs, skeleton).
+**Follow-up (2026-07-22, same day)** — closed out the gaps above:
+- Added backend tests for the two modules that had none: `calendar.services.test.js` (year filter/default, create scoping, remove/not-found), `activityLog.services.test.js` (pagination + filter passthrough). Backend now **89/89**.
+- Added frontend component specs for every untested piece of V2 UI: `notification-bell.spec.ts`, `modal.spec.ts`, `toast-container.spec.ts`, `empty-state.spec.ts`, `tabs.spec.ts`, `skeleton.spec.ts`, `leave.spec.ts` (Developer vs Manager tab/approval visibility, submit/cancel/decide flows), `task-detail.spec.ts` (load task+comments+attachments+sprints, comment threading, status change, file upload, formatSize). Frontend now **95/95**.
+- Wrote a real root `README.md` (was empty) — stack overview, feature list, quick-start commands, pointers into `docs/QUICKSTART.md` and `docs/DEPLOYMENT.md`.
+- Re-ran `ng build` — still clean, no budget warnings.
+
+**Still not done** (lower priority, intentionally deferred):
 - No dedicated settings/calendar/activity-log pages — currently folded into `admin`; fine for now but worth splitting into tabs if `admin.ts` grows further.
-- No browser/Playwright walkthrough of the V2 features yet (comments, attachments, notifications, sprints, leave, real-time socket push) — only automated tests + build have been verified so far.
-- `README.md` at repo root is still empty.
+- No browser/Playwright walkthrough of the V2 features yet (comments, attachments, notifications, sprints, leave, real-time socket push) — everything above is automated-test coverage, not a manual click-through in a running app.
