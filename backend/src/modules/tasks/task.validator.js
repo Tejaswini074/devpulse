@@ -15,6 +15,11 @@ exports.taskValidator = [
         .isInt()
         .withMessage("Invalid assigned_to"),
 
+    body("sprint_id")
+        .optional({ nullable: true })
+        .isInt()
+        .withMessage("Invalid sprint_id"),
+
     body("title")
         .trim()
         .notEmpty()

@@ -16,6 +16,14 @@
       <app-stat-card label="Tasks done" [value]="ov.completedTasks" icon="check-square" tone="green" />
       <app-stat-card label="Productivity" [value]="ov.productivityScore" icon="bar-chart" tone="amber" />
     </div>
+  } @else if (loading()) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+      @for (n of [1, 2, 3, 4, 5]; track n) {
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+          <app-skeleton [rows]="2" />
+        </div>
+      }
+    </div>
   }
 
   <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm shadow-slate-200/50 dark:shadow-none">
@@ -23,7 +31,7 @@
     @if (weeklyReport(); as report) {
       <app-weekly-chart [days]="report.days" />
     } @else if (loading()) {
-      <p class="text-sm text-slate-500 dark:text-slate-400">Loading chart...</p>
+      <app-skeleton [rows]="4" />
     }
   </div>
 

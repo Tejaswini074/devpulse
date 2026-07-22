@@ -56,6 +56,14 @@ const githubRoutes = require("./modules/github");
 const productivityRoutes = require("./modules/productivity");
 const dashboardRoutes = require("./modules/dashboard");
 const reportRoutes = require("./modules/reports");
+const commentRoutes = require("./modules/comments");
+const attachmentRoutes = require("./modules/attachments");
+const notificationRoutes = require("./modules/notifications");
+const sprintRoutes = require("./modules/sprints");
+const leaveRoutes = require("./modules/leave");
+const calendarRoutes = require("./modules/calendar");
+const activityLogRoutes = require("./modules/activityLogs");
+const settingRoutes = require("./modules/settings");
 
 app.use("/api/invite", inviteRoutes);
 // Apply limiter ONLY to login endpoint
@@ -76,6 +84,14 @@ app.use("/api/github", githubRoutes);
 app.use("/api/productivity", productivityRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/comments", commentRoutes);
+app.use("/api/attachments", attachmentRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/sprints", sprintRoutes);
+app.use("/api/leave", leaveRoutes);
+app.use("/api/calendar", calendarRoutes);
+app.use("/api/activity-logs", activityLogRoutes);
+app.use("/api/settings", settingRoutes);
 
 const errorMiddleware = require("./middleware/errorMiddleware");
 

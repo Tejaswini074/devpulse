@@ -3,11 +3,12 @@ import { DashboardService } from "../../core/services/dashboard.service";
 import { AuthService } from "../../core/services/auth.service";
 import { StatCard } from "../../shared/components/stat-card";
 import { WeeklyChart } from "../../shared/components/weekly-chart";
+import { Skeleton } from "../../shared/components/skeleton";
 import { DashboardOverview, TeamOverviewRow, WeeklyReport } from "../../core/models/dashboard.model";
 
 @Component({
   selector: "app-dashboard",
-  imports: [StatCard, WeeklyChart],
+  imports: [StatCard, WeeklyChart, Skeleton],
   templateUrl: "./dashboard.html"
 })
 export class Dashboard implements OnInit {

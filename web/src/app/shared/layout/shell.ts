@@ -4,6 +4,7 @@ import { filter } from "rxjs";
 import { AuthService } from "../../core/services/auth.service";
 import { ThemeService } from "../../core/services/theme.service";
 import { Icon } from "../components/icon";
+import { NotificationBell } from "../components/notification-bell";
 
 interface NavItem {
   label: string;
@@ -17,6 +18,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Projects", path: "/projects", icon: "folder" },
   { label: "Tasks", path: "/tasks", icon: "check-square" },
   { label: "Daily Logs", path: "/daily-logs", icon: "clock" },
+  { label: "Leave", path: "/leave", icon: "briefcase" },
   { label: "Reports", path: "/reports", icon: "bar-chart" },
   { label: "Team", path: "/team", icon: "users", roles: ["Admin", "Super Admin", "Manager"] },
   { label: "Admin", path: "/admin", icon: "settings", roles: ["Admin", "Super Admin"] }
@@ -24,7 +26,7 @@ const NAV_ITEMS: NavItem[] = [
 
 @Component({
   selector: "app-shell",
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icon],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icon, NotificationBell],
   templateUrl: "./shell.html"
 })
 export class Shell {

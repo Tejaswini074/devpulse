@@ -8,6 +8,7 @@ export interface Task {
   task_code: string;
   project_id: number;
   project_name?: string;
+  sprint_id?: number | null;
   assigned_to: number;
   assigned_to_name?: string;
   title: string;
@@ -16,6 +17,7 @@ export interface Task {
   priority: "Low" | "Medium" | "High" | "Critical";
   severity: "Low" | "Medium" | "High" | "Critical";
   status: TaskStatus;
+  story_points?: number;
   progress: number;
   estimated_hours: number | null;
   actual_hours: number;

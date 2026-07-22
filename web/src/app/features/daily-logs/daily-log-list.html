@@ -74,9 +74,13 @@
   }
 
   @if (loading()) {
-    <p class="text-sm text-slate-500 dark:text-slate-400">Loading logs...</p>
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+      <app-skeleton [rows]="5" />
+    </div>
   } @else if (!logs().length) {
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center text-sm text-slate-500 dark:text-slate-400 shadow-sm shadow-slate-200/50 dark:shadow-none">No logs yet.</div>
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm shadow-slate-200/50 dark:shadow-none">
+      <app-empty-state icon="clock" title="No logs yet" subtitle="Log your hours to keep your productivity score up to date." actionLabel="Log hours" (action)="toggleForm()" />
+    </div>
   } @else {
     <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm shadow-slate-200/50 dark:shadow-none overflow-x-auto">
       <table class="w-full text-sm">

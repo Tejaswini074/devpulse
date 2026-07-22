@@ -3,9 +3,12 @@ import { DashboardService } from "../../core/services/dashboard.service";
 import { TeamService } from "../../core/services/team.service";
 import { TeamOverviewRow } from "../../core/models/dashboard.model";
 import { Team } from "../../core/models/team.model";
+import { Skeleton } from "../../shared/components/skeleton";
+import { EmptyState } from "../../shared/components/empty-state";
 
 @Component({
   selector: "app-team",
+  imports: [Skeleton, EmptyState],
   templateUrl: "./team.html"
 })
 export class TeamPage implements OnInit {

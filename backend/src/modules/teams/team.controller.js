@@ -1,11 +1,18 @@
 const TeamService = require("./team.services");
 const Response = require("../../utils/response");
+const { logActivity } = require("../../utils/activityLogger");
 
 class TeamController {
 
     async create(req, res) {
         try {
             const result = await TeamService.create(req.user.organization_id, req.body);
+            await logActivity(req.user.organization_id, req.user.id, {
+                module_name: "Team",
+                module_id: result.id,
+                action: "Create",
+                description: `Created team "${req.body.team_name}"`
+            }, req);
             return Response.success(res, "Team created successfully", result, 201);
         } catch (error) {
             console.error(error);

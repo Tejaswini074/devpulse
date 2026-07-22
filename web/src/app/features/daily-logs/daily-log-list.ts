@@ -8,10 +8,13 @@ import { Project } from "../../core/models/project.model";
 import { Task } from "../../core/models/task.model";
 import { StatCard } from "../../shared/components/stat-card";
 import { Icon } from "../../shared/components/icon";
+import { Skeleton } from "../../shared/components/skeleton";
+import { EmptyState } from "../../shared/components/empty-state";
+import { ToastService } from "../../core/services/toast.service";
 
 @Component({
   selector: "app-daily-log-list",
-  imports: [ReactiveFormsModule, StatCard, Icon],
+  imports: [ReactiveFormsModule, StatCard, Icon, Skeleton, EmptyState],
   templateUrl: "./daily-log-list.html"
 })
 export class DailyLogList implements OnInit {
@@ -19,6 +22,7 @@ export class DailyLogList implements OnInit {
   private dailyLogService = inject(DailyLogService);
   private projectService = inject(ProjectService);
   private taskService = inject(TaskService);
+  private toast = inject(ToastService);
 
   readonly loading = signal(true);
   readonly logs = signal<DailyLog[]>([]);
@@ -76,12 +80,20 @@ export class DailyLogList implements OnInit {
         this.form.reset({ log_date: new Date().toISOString().slice(0, 10), hours_worked: 1, work_status: "In Progress" });
         this.load();
         this.dailyLogService.userHours().subscribe((res) => this.userHours.set(res.data));
+        this.toast.success("Log saved");
       },
-      error: (err) => this.errorMessage.set(err?.error?.message ?? "Could not save log.")
+      error: (err) => {
+        const message = err?.error?.message ?? "Could not save log.";
+        this.errorMessage.set(message);
+        this.toast.error(message);
+      }
     });
   }
 
   remove(id: number): void {
-    this.dailyLogService.remove(id).subscribe(() => this.load());
+    this.dailyLogService.remove(id).subscribe(() => {
+      this.load();
+      this.toast.success("Log removed");
+    });
   }
 }

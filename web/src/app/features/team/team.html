@@ -16,9 +16,13 @@
   </div>
 
   @if (loading()) {
-    <p class="text-sm text-slate-500 dark:text-slate-400">Loading team overview...</p>
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+      <app-skeleton [rows]="5" />
+    </div>
   } @else if (!overview().length) {
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center text-sm text-slate-500 dark:text-slate-400 shadow-sm shadow-slate-200/50 dark:shadow-none">No data yet.</div>
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm shadow-slate-200/50 dark:shadow-none">
+      <app-empty-state icon="users" title="No data yet" subtitle="Productivity data will appear once your team logs hours and completes tasks." />
+    </div>
   } @else {
     <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm shadow-slate-200/50 dark:shadow-none overflow-x-auto">
       <table class="w-full text-sm">

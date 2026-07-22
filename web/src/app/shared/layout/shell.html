@@ -63,13 +63,16 @@
         <div class="w-6 h-6 rounded-md bg-linear-to-br from-brand-400 to-brand-600 flex items-center justify-center font-bold text-white text-xs">D</div>
         <span class="font-semibold text-slate-900 dark:text-white">DevPulse</span>
       </div>
-      <button
-        (click)="toggleTheme()"
-        class="ml-auto text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-        [attr.aria-label]="theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
-      >
-        <app-icon [name]="theme() === 'dark' ? 'sun' : 'moon'" [size]="18" />
-      </button>
+      <div class="ml-auto flex items-center gap-1">
+        <app-notification-bell />
+        <button
+          (click)="toggleTheme()"
+          class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          [attr.aria-label]="theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+        >
+          <app-icon [name]="theme() === 'dark' ? 'sun' : 'moon'" [size]="18" />
+        </button>
+      </div>
     </header>
 
     <main class="flex-1 min-w-0 overflow-y-auto">

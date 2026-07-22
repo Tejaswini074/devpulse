@@ -15,7 +15,9 @@
   </div>
 
   @if (loading()) {
-    <p class="text-sm text-slate-500 dark:text-slate-400">Loading report...</p>
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+      <app-skeleton [rows]="5" />
+    </div>
   } @else if (report(); as r) {
     <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm shadow-slate-200/50 dark:shadow-none p-5">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-4">

@@ -2,6 +2,7 @@ const TaskRepository = require("./task.repository");
 const { generateTaskCode } = require("../../utils/generateCode");
 const { getPagination, buildPaginatedResponse } = require("../../utils/pagination");
 const ROLES = require("../../constants/roles");
+const NotificationService = require("../notifications/notification.services");
 
 class TaskService {
 
@@ -10,6 +11,7 @@ class TaskService {
             organization_id: user.organization_id,
             task_code: generateTaskCode(),
             project_id: data.project_id,
+            sprint_id: data.sprint_id,
             assigned_to: data.assigned_to,
             title: data.title,
             description: data.description,
@@ -21,6 +23,16 @@ class TaskService {
             due_date: data.due_date,
             created_by: user.id
         });
+
+        if (data.assigned_to !== user.id) {
+            await NotificationService.notify(user.organization_id, data.assigned_to, {
+                title: "New task assigned to you",
+                message: `You were assigned "${data.title}"`,
+                type: "Task",
+                action_url: `/tasks/${result.insertId}`
+            });
+        }
+
         return { id: result.insertId };
     }
 
@@ -51,11 +63,23 @@ class TaskService {
         if (!task) {
             throw new Error("Task not found");
         }
+        const newAssignee = data.assigned_to ?? task.assigned_to;
         await TaskRepository.update(id, user.organization_id, {
             ...data,
-            assigned_to: data.assigned_to ?? task.assigned_to,
+            assigned_to: newAssignee,
+            sprint_id: data.sprint_id ?? task.sprint_id,
             updated_by: user.id
         });
+
+        if (newAssignee !== task.assigned_to && newAssignee !== user.id) {
+            await NotificationService.notify(user.organization_id, newAssignee, {
+                title: "Task assigned to you",
+                message: `You were assigned "${task.title}"`,
+                type: "Task",
+                action_url: `/tasks/${id}`
+            });
+        }
+
         return true;
     }
 
@@ -74,6 +98,16 @@ class TaskService {
 
         await TaskRepository.updateStatus(id, user.organization_id, status, user.id);
         await TaskRepository.recordHistory(id, user.id, "status", task.status, status);
+
+        if (status === "Done" && task.created_by && task.created_by !== user.id) {
+            await NotificationService.notify(user.organization_id, task.created_by, {
+                title: "Task completed",
+                message: `"${task.title}" was marked Done`,
+                type: "Task",
+                action_url: `/tasks/${id}`
+            });
+        }
+
         return true;
     }
 

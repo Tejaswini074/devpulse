@@ -78,7 +78,13 @@
   }
 
   @if (loading()) {
-    <p class="text-sm text-slate-500 dark:text-slate-400">Loading tasks...</p>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      @for (n of [1, 2, 3, 4]; track n) {
+        <div class="bg-slate-100 dark:bg-slate-900 rounded-xl p-4">
+          <app-skeleton [rows]="3" />
+        </div>
+      }
+    </div>
   } @else {
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       @for (status of statuses; track status) {
@@ -96,7 +102,7 @@
           </div>
           <div class="space-y-2">
             @for (task of columns()[status]; track task.id) {
-              <div cdkDrag class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3 cursor-grab active:cursor-grabbing shadow-sm shadow-slate-200/50 dark:shadow-none transition-all hover:shadow-md hover:shadow-slate-300/40 hover:-translate-y-0.5 hover:border-brand-200 dark:hover:border-brand-800">
+              <div cdkDrag (click)="openTask(task.id)" class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3 cursor-grab active:cursor-grabbing shadow-sm shadow-slate-200/50 dark:shadow-none transition-all hover:shadow-md hover:shadow-slate-300/40 hover:-translate-y-0.5 hover:border-brand-200 dark:hover:border-brand-800">
                 <div class="flex items-center justify-between mb-1">
                   <span class="text-xs font-mono text-slate-400 dark:text-slate-500">{{ task.task_code }}</span>
                   <span class="text-[11px] font-medium px-1.5 py-0.5 rounded-full" [class]="priorityColor(task.priority)">{{ task.priority }}</span>
@@ -115,4 +121,11 @@
       }
     </div>
   }
+
+  <app-task-detail
+    [taskId]="selectedTaskId()"
+    [orgUsers]="orgUsers()"
+    (close)="closeTask()"
+    (updated)="load()"
+  />
 </div>

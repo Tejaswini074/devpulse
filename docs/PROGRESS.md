@@ -125,3 +125,36 @@ All four "not yet done" items from session 2 were completed:
 - **Dark mode**: Tailwind v4 class-based dark mode via `@custom-variant dark (&:where(.dark, .dark *));` in `styles.css` (v4 has no JS config, this is the documented opt-in). New `core/services/theme.service.ts` (signal-based, localStorage-persisted, defaults to `prefers-color-scheme`), applied at the root via `App`'s constructor so it's set before any route renders. Toggle button (sun/moon icon) lives in the shell's topbar. `dark:` variants added across every page/component. `StatCard` was refactored from inline hex `[style.background-color]`/`[style.color]` inputs to a `tone` input (`indigo`/`cyan`/`slate`/`green`/`amber`) mapped to Tailwind classes with `dark:` variants — inline styles can't be overridden by `dark:` utility classes (specificity), so the tone-class approach was required, not optional. `WeeklyChart` (Chart.js) reads `ThemeService.theme()` via an `effect()` and re-renders with theme-appropriate axis/grid/legend colors when the theme flips.
 
 **Browser-verified again** (fresh Playwright pass): confirmed dark mode toggles correctly, persists across a full page reload (localStorage), and renders correctly on dashboard/tasks/reports; confirmed the mobile viewport (390×844) hamburger menu opens/closes the sidebar with backdrop, auto-closes on nav, and every page (dashboard, admin, daily-logs) is usable at that width in both themes. Zero console errors, zero failed HTTP requests. Both `ng build` and both test suites (`backend`: 38/38, `web`: 35/35) pass.
+
+## Session 4 (2026-07-22) — V2: real-time + collaboration features
+
+New backend modules (same `controller/services/repository/routes/validator/index` pattern, wired into `app.js`, authenticated via `authMiddleware`):
+
+| Module | Mount | Notes |
+|---|---|---|
+| `comments` | `/api/comments` | task comments |
+| `attachments` | `/api/attachments` | file upload (`attachment.upload.js`) |
+| `notifications` | `/api/notifications` | in-app notifications |
+| `sprints` | `/api/sprints` | scoped to a project |
+| `leave` | `/api/leave` | leave requests |
+| `calendar` | `/api/calendar` | work calendar |
+| `activityLogs` | `/api/activity-logs` | audit trail (`utils/activityLogger.js`) |
+| `settings` | `/api/settings` | app settings |
+
+- `backend/src/sockets/io.js` + `server.js` — Socket.IO server wraps the Express app (`http.createServer(app)`), JWT-authenticated handshake (`socket.handshake.auth.token`), each connection joins a `user:<id>` room for targeted pushes (e.g. new notification).
+
+Web (`web/src/app/`):
+- New core services: `activity-log`, `calendar`, `comment`, `leave`, `notification`, `settings`, `sprint`, `socket`, `toast`. New models to match.
+- New shared components: `empty-state`, `modal`, `notification-bell` (wired into shell topbar, live-updates via `socket.service`), `skeleton`, `tabs`, `toast-container`.
+- `features/leave/` — new routed page (`/leave`), in nav.
+- `features/tasks/task-detail.ts/html` — new modal opened from the kanban board (not a standalone route); houses comments + attachments UI.
+- Sprints UI lives inside `project-detail` and `task-detail`. Calendar/settings/activity-logs UI lives inside `admin`.
+
+**Verified 2026-07-22**: `ng build` clean (no budget warnings), backend `npm test` 82/82 passing (up from 38 — new suites for comments/attachments/notifications/sprints/leave/settings, but **`calendar` and `activityLogs` still have no backend tests**), frontend `ng test` 58/58 passing (up from 35 — new specs for attachment/comment/leave/notification/settings/sprint services, but **no component-level specs yet** for `leave` page, `task-detail`, `notification-bell`, `modal`, `toast-container`). This whole batch was built on top of the V1 work above but had never been committed — verified green here before committing.
+
+**Not yet done**:
+- Backend tests for `calendar` and `activityLogs` modules.
+- Frontend component specs for the new V2 UI (leave page, task-detail modal, notification-bell, modal, toast-container, empty-state, tabs, skeleton).
+- No dedicated settings/calendar/activity-log pages — currently folded into `admin`; fine for now but worth splitting into tabs if `admin.ts` grows further.
+- No browser/Playwright walkthrough of the V2 features yet (comments, attachments, notifications, sprints, leave, real-time socket push) — only automated tests + build have been verified so far.
+- `README.md` at repo root is still empty.

@@ -1,11 +1,18 @@
 const ProjectService = require("./project.services");
 const Response = require("../../utils/response");
+const { logActivity } = require("../../utils/activityLogger");
 
 class ProjectController {
 
     async create(req, res) {
         try {
             const result = await ProjectService.create(req.user, req.body);
+            await logActivity(req.user.organization_id, req.user.id, {
+                module_name: "Project",
+                module_id: result.id,
+                action: "Create",
+                description: `Created project "${req.body.project_name}"`
+            }, req);
             return Response.success(res, "Project created successfully", result, 201);
         } catch (error) {
             console.error(error);
@@ -36,6 +43,12 @@ class ProjectController {
     async update(req, res) {
         try {
             await ProjectService.update(req.params.id, req.user, req.body);
+            await logActivity(req.user.organization_id, req.user.id, {
+                module_name: "Project",
+                module_id: req.params.id,
+                action: "Update",
+                description: `Updated project "${req.body.project_name}"`
+            }, req);
             return Response.success(res, "Project updated successfully");
         } catch (error) {
             console.error(error);

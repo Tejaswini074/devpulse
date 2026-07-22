@@ -8,10 +8,13 @@ import { UserService, OrgUser } from "../../core/services/user.service";
 import { Task, TaskStatus, TASK_STATUSES } from "../../core/models/task.model";
 import { Project } from "../../core/models/project.model";
 import { Icon } from "../../shared/components/icon";
+import { TaskDetail } from "./task-detail";
+import { ToastService } from "../../core/services/toast.service";
+import { Skeleton } from "../../shared/components/skeleton";
 
 @Component({
   selector: "app-task-board",
-  imports: [ReactiveFormsModule, DragDropModule, Icon],
+  imports: [ReactiveFormsModule, DragDropModule, Icon, TaskDetail, Skeleton],
   templateUrl: "./task-board.html"
 })
 export class TaskBoard implements OnInit {
@@ -20,6 +23,7 @@ export class TaskBoard implements OnInit {
   private taskService = inject(TaskService);
   private projectService = inject(ProjectService);
   private userService = inject(UserService);
+  private toast = inject(ToastService);
 
   readonly statuses = TASK_STATUSES;
   readonly loading = signal(true);
@@ -27,6 +31,7 @@ export class TaskBoard implements OnInit {
   readonly orgUsers = signal<OrgUser[]>([]);
   readonly showForm = signal(false);
   readonly errorMessage = signal("");
+  readonly selectedTaskId = signal<number | null>(null);
 
   readonly columns = signal<Record<TaskStatus, Task[]>>({
     Backlog: [], Todo: [], "In Progress": [], "Code Review": [], Testing: [], Done: [], Blocked: []
@@ -78,8 +83,9 @@ export class TaskBoard implements OnInit {
 
     this.taskService.updateStatus(task.id, newStatus).subscribe({
       next: () => (task.status = newStatus),
-      error: () => {
+      error: (err) => {
         transferArrayItem(event.container.data, event.previousContainer.data, event.currentIndex, event.previousIndex);
+        this.toast.error(err?.error?.message ?? "Could not update task status.");
       }
     });
   }
@@ -87,6 +93,14 @@ export class TaskBoard implements OnInit {
   toggleForm(): void {
     this.showForm.set(!this.showForm());
     this.errorMessage.set("");
+  }
+
+  openTask(taskId: number): void {
+    this.selectedTaskId.set(taskId);
+  }
+
+  closeTask(): void {
+    this.selectedTaskId.set(null);
   }
 
   submit(): void {
@@ -100,8 +114,13 @@ export class TaskBoard implements OnInit {
         this.showForm.set(false);
         this.form.reset({ task_type: "Task", priority: "Medium" });
         this.load();
+        this.toast.success("Task created");
       },
-      error: (err) => this.errorMessage.set(err?.error?.message ?? "Could not create task.")
+      error: (err) => {
+        const message = err?.error?.message ?? "Could not create task.";
+        this.errorMessage.set(message);
+        this.toast.error(message);
+      }
     });
   }
 

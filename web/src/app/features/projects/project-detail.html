@@ -1,5 +1,7 @@
 @if (loading()) {
-  <p class="text-sm text-slate-500 dark:text-slate-400">Loading project...</p>
+  <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+    <app-skeleton [rows]="6" />
+  </div>
 } @else if (project(); as p) {
   <div class="space-y-6">
     <div>
@@ -59,7 +61,7 @@
         }
 
         @if (!p.members?.length) {
-          <p class="text-sm text-slate-500 dark:text-slate-400">No members yet.</p>
+          <app-empty-state icon="users" title="No members yet" subtitle="Add teammates so they can be assigned tasks." />
         } @else {
           <ul class="space-y-2">
             @for (m of p.members; track m.id) {
@@ -96,7 +98,7 @@
         }
 
         @if (!milestones().length) {
-          <p class="text-sm text-slate-500 dark:text-slate-400">No milestones yet.</p>
+          <app-empty-state icon="check-square" title="No milestones yet" subtitle="Break the project into milestones to track delivery." />
         } @else {
           <ul class="space-y-2">
             @for (m of milestones(); track m.id) {
@@ -118,6 +120,84 @@
           </ul>
         }
       </div>
+    </div>
+
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-none">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+          <app-icon name="layers" [size]="15" />
+          Sprints
+        </h2>
+        @if (canManage) {
+          <button (click)="showSprintForm.set(!showSprintForm())" class="text-xs font-medium text-brand-600 dark:text-brand-400 hover:underline">+ Add sprint</button>
+        }
+      </div>
+
+      @if (showSprintForm()) {
+        <form [formGroup]="sprintForm" (ngSubmit)="addSprint()" class="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4">
+          <input formControlName="sprint_name" placeholder="Sprint name" class="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <input type="date" formControlName="start_date" class="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <input type="date" formControlName="end_date" class="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-sm shadow-brand-600/25 hover:shadow-md hover:shadow-brand-600/30 transition-all">Create</button>
+        </form>
+      }
+
+      @if (!sprints().length) {
+        <app-empty-state icon="layers" title="No sprints yet" subtitle="Group tasks into sprints to plan and track delivery." />
+      } @else {
+        <ul class="space-y-2">
+          @for (s of sprints(); track s.id) {
+            <li class="rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div class="flex items-center justify-between gap-2 px-3 py-2.5 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60" (click)="toggleSprintExpand(s)">
+                <div class="min-w-0">
+                  <span class="text-sm font-medium text-slate-900 dark:text-slate-100">{{ s.sprint_name }}</span>
+                  @if (s.start_date && s.end_date) {
+                    <span class="text-xs text-slate-400 dark:text-slate-500 ml-2">{{ s.start_date }} &rarr; {{ s.end_date }}</span>
+                  }
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300">{{ s.status }}</span>
+                  @if (canManage) {
+                    <button (click)="removeSprint(s.id); $event.stopPropagation()" class="text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400">
+                      <app-icon name="trash" [size]="14" />
+                    </button>
+                  }
+                </div>
+              </div>
+
+              @if (expandedSprint()?.id === s.id; as detail) {
+                <div class="px-3 pb-3 pt-1 border-t border-slate-100 dark:border-slate-800">
+                  <div class="flex items-center gap-2 mb-2">
+                    <div class="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                      <div class="h-full bg-brand-500 rounded-full transition-all" [style.width.%]="expandedSprint()!.completion_pct"></div>
+                    </div>
+                    <span class="text-xs text-slate-400 dark:text-slate-500 shrink-0">{{ expandedSprint()!.points_done }}/{{ expandedSprint()!.points_total }} pts</span>
+                  </div>
+                  @if (canManage) {
+                    <div class="flex gap-1 mb-2">
+                      @for (opt of sprintStatusOptions; track opt) {
+                        <button (click)="changeSprintStatus(s, opt)" class="text-[11px] font-medium px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">{{ opt }}</button>
+                      }
+                    </div>
+                  }
+                  @if (!expandedSprint()!.tasks.length) {
+                    <p class="text-xs text-slate-400 dark:text-slate-500">No tasks in this sprint yet.</p>
+                  } @else {
+                    <ul class="space-y-1">
+                      @for (t of expandedSprint()!.tasks; track t.id) {
+                        <li class="flex items-center justify-between text-xs text-slate-600 dark:text-slate-300">
+                          <span>{{ t.title }}</span>
+                          <span class="text-slate-400 dark:text-slate-500">{{ t.status }} &middot; {{ t.story_points ?? 0 }} pts</span>
+                        </li>
+                      }
+                    </ul>
+                  }
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      }
     </div>
   </div>
 }

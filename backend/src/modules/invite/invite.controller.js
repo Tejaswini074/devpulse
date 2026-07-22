@@ -1,6 +1,7 @@
 const InviteService = require("./invite.services");
 const Response = require("../../utils/response");
 const MSG = require("../../constants/messages");
+const { logActivity } = require("../../utils/activityLogger");
 
 class InviteController {
 
@@ -8,6 +9,12 @@ class InviteController {
         try {
             const data = { ...req.body, organization_id: req.user.organization_id, created_by: req.user.id };
             await InviteService.inviteUser(data);
+
+            await logActivity(req.user.organization_id, req.user.id, {
+                module_name: "User",
+                action: "Invite",
+                description: `Invited ${req.body.email} as ${req.body.role}`
+            }, req);
 
             return Response.success(
                 res,

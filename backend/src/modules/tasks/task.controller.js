@@ -1,5 +1,6 @@
 const TaskService = require("./task.services");
 const Response = require("../../utils/response");
+const { logActivity } = require("../../utils/activityLogger");
 
 class TaskController {
 
@@ -46,6 +47,12 @@ class TaskController {
     async updateStatus(req, res) {
         try {
             await TaskService.updateStatus(req.params.id, req.user, req.body.status);
+            await logActivity(req.user.organization_id, req.user.id, {
+                module_name: "Task",
+                module_id: req.params.id,
+                action: "StatusChange",
+                description: `Changed task status to "${req.body.status}"`
+            }, req);
             return Response.success(res, "Task status updated successfully");
         } catch (error) {
             console.error(error);

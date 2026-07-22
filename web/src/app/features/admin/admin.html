@@ -1,9 +1,12 @@
 <div class="space-y-6">
   <div>
     <h1 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Admin</h1>
-    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage users, invites, and teams.</p>
+    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage users, invites, teams, and organization settings.</p>
   </div>
 
+  <app-tabs [tabs]="tabs" [active]="activeTab()" (activeChange)="setTab($event)" />
+
+  @if (activeTab() === "people") {
   <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-none">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Teams</h2>
@@ -119,4 +122,105 @@
       </div>
     }
   </div>
+  }
+
+  @if (activeTab() === "activity") {
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-none">
+      <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">Recent activity</h2>
+      @if (!activityLogs().length) {
+        <app-empty-state icon="inbox" title="No activity recorded yet" subtitle="Key actions across the organization will appear here." />
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-500 dark:text-slate-400">
+                <th class="px-3 py-2 font-medium">User</th>
+                <th class="px-3 py-2 font-medium">Module</th>
+                <th class="px-3 py-2 font-medium">Action</th>
+                <th class="px-3 py-2 font-medium">Description</th>
+                <th class="px-3 py-2 font-medium">When</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (log of activityLogs(); track log.id) {
+                <tr class="border-t border-slate-100 dark:border-slate-800">
+                  <td class="px-3 py-2.5 text-slate-900 dark:text-slate-100 font-medium">{{ log.user_name ?? "System" }}</td>
+                  <td class="px-3 py-2.5 text-slate-500 dark:text-slate-400">{{ log.module_name }}</td>
+                  <td class="px-3 py-2.5 text-slate-500 dark:text-slate-400">{{ log.action }}</td>
+                  <td class="px-3 py-2.5 text-slate-500 dark:text-slate-400">{{ log.description }}</td>
+                  <td class="px-3 py-2.5 text-slate-400 dark:text-slate-500 text-xs whitespace-nowrap">{{ log.created_at }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  @if (activeTab() === "settings") {
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-none max-w-lg">
+      <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">Organization settings</h2>
+      <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Company name</label>
+          <input formControlName="company_name" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Weekly hours target</label>
+          <input type="number" formControlName="weekly_hours_target" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Used to score weekly productivity (default 40).</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Weekly commits target</label>
+          <input type="number" formControlName="weekly_commits_target" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Used to score weekly productivity (default 20).</p>
+        </div>
+        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm shadow-brand-600/25 hover:shadow-md hover:shadow-brand-600/30 transition-all">Save settings</button>
+      </form>
+    </div>
+  }
+
+  @if (activeTab() === "holidays") {
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-none">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Holidays ({{ calendarEntries().length }})</h2>
+        <button (click)="toggleHolidayForm()" class="flex items-center gap-1 text-xs font-medium text-brand-600 dark:text-brand-400 hover:underline">
+          <app-icon name="plus" [size]="14" />
+          Add holiday
+        </button>
+      </div>
+
+      @if (showHolidayForm()) {
+        <form [formGroup]="holidayForm" (ngSubmit)="addHoliday()" class="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4">
+          <input type="date" formControlName="calendar_date" class="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <input formControlName="holiday_name" placeholder="Holiday name" class="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <select formControlName="holiday_type" class="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="National">National</option>
+            <option value="State">State</option>
+            <option value="Company">Company</option>
+          </select>
+          <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-sm shadow-brand-600/25 hover:shadow-md hover:shadow-brand-600/30 transition-all">Add</button>
+        </form>
+      }
+
+      @if (!calendarEntries().length) {
+        <app-empty-state icon="calendar" title="No holidays configured" subtitle="Add company holidays so they show up on the work calendar." />
+      } @else {
+        <ul class="space-y-2">
+          @for (entry of calendarEntries(); track entry.id) {
+            <li class="flex items-center justify-between text-sm border border-slate-100 dark:border-slate-800 rounded-lg px-3 py-2">
+              <div>
+                <span class="text-slate-900 dark:text-slate-100 font-medium">{{ entry.holiday_name }}</span>
+                <span class="text-xs text-slate-400 dark:text-slate-500 ml-2">{{ entry.calendar_date }} &middot; {{ entry.holiday_type }}</span>
+              </div>
+              <button (click)="removeHoliday(entry.id)" class="text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400">
+                <app-icon name="trash" [size]="14" />
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
 </div>

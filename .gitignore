@@ -11,6 +11,9 @@ dist/
 out-tsc/
 .angular/
 
+# Uploaded files
+backend/uploads/
+
 # Logs
 *.log
 npm-debug.log*

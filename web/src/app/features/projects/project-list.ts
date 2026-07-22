@@ -4,18 +4,22 @@ import { RouterLink } from "@angular/router";
 import { ProjectService } from "../../core/services/project.service";
 import { UserService, OrgUser } from "../../core/services/user.service";
 import { AuthService } from "../../core/services/auth.service";
+import { ToastService } from "../../core/services/toast.service";
 import { Project } from "../../core/models/project.model";
 import { Icon } from "../../shared/components/icon";
+import { Skeleton } from "../../shared/components/skeleton";
+import { EmptyState } from "../../shared/components/empty-state";
 
 @Component({
   selector: "app-project-list",
-  imports: [ReactiveFormsModule, RouterLink, Icon],
+  imports: [ReactiveFormsModule, RouterLink, Icon, Skeleton, EmptyState],
   templateUrl: "./project-list.html"
 })
 export class ProjectList implements OnInit {
   private fb = inject(FormBuilder);
   private projectService = inject(ProjectService);
   private userService = inject(UserService);
+  private toast = inject(ToastService);
   protected auth = inject(AuthService);
 
   readonly loading = signal(true);
@@ -71,10 +75,13 @@ export class ProjectList implements OnInit {
         this.showForm.set(false);
         this.form.reset({ project_type: "Internal", priority: "Medium" });
         this.load();
+        this.toast.success("Project created");
       },
       error: (err) => {
         this.submitting.set(false);
-        this.errorMessage.set(err?.error?.message ?? "Could not create project.");
+        const message = err?.error?.message ?? "Could not create project.";
+        this.errorMessage.set(message);
+        this.toast.error(message);
       }
     });
   }

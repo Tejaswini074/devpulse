@@ -1,5 +1,6 @@
 const UserService = require("./user.services");
 const Response = require("../../utils/response");
+const { logActivity } = require("../../utils/activityLogger");
 
 class UserController {
 
@@ -36,6 +37,12 @@ class UserController {
     async remove(req, res) {
         try {
             await UserService.remove(req.params.id, req.user.organization_id);
+            await logActivity(req.user.organization_id, req.user.id, {
+                module_name: "User",
+                module_id: req.params.id,
+                action: "Deactivate",
+                description: "Deactivated a user"
+            }, req);
             return Response.success(res, "User deactivated successfully");
         } catch (error) {
             console.error(error);

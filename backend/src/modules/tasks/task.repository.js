@@ -5,14 +5,15 @@ class TaskRepository {
     async create(data) {
         const sql = `
             INSERT INTO tasks
-                (organization_id, task_code, project_id, assigned_to, title, description,
+                (organization_id, task_code, project_id, sprint_id, assigned_to, title, description,
                  task_type, priority, severity, status, estimated_hours, due_date, created_by)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         const [result] = await db.execute(sql, [
             data.organization_id,
             data.task_code,
             data.project_id,
+            data.sprint_id ?? null,
             data.assigned_to,
             data.title,
             data.description ?? null,
@@ -24,6 +25,14 @@ class TaskRepository {
             data.due_date ?? null,
             data.created_by
         ]);
+        return result;
+    }
+
+    async assignSprint(id, organizationId, sprintId) {
+        const [result] = await db.execute(
+            "UPDATE tasks SET sprint_id = ? WHERE id = ? AND organization_id = ?",
+            [sprintId, id, organizationId]
+        );
         return result;
     }
 
@@ -92,7 +101,7 @@ class TaskRepository {
     async update(id, organizationId, data) {
         const sql = `
             UPDATE tasks
-            SET title = ?, description = ?, assigned_to = ?, task_type = ?, priority = ?, severity = ?,
+            SET title = ?, description = ?, assigned_to = ?, sprint_id = ?, task_type = ?, priority = ?, severity = ?,
                 status = ?, estimated_hours = ?, due_date = ?, progress = ?, updated_by = ?
             WHERE id = ? AND organization_id = ?
         `;
@@ -100,6 +109,7 @@ class TaskRepository {
             data.title,
             data.description ?? null,
             data.assigned_to,
+            data.sprint_id ?? null,
             data.task_type ?? "Task",
             data.priority ?? "Medium",
             data.severity ?? "Medium",

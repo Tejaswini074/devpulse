@@ -5,6 +5,7 @@ import { Observable, tap } from "rxjs";
 import { environment } from "../../../environments/environment";
 import { ApiResponse } from "../models/api.model";
 import { AuthResponse, AuthUser } from "../models/user.model";
+import { SocketService } from "./socket.service";
 
 const ACCESS_TOKEN_KEY = "devpulse_access_token";
 const REFRESH_TOKEN_KEY = "devpulse_refresh_token";
@@ -19,7 +20,7 @@ export class AuthService {
   readonly isLoggedIn = computed(() => !!this.currentUserSignal());
   readonly role = computed(() => this.currentUserSignal()?.role ?? null);
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private socket: SocketService) {}
 
   private readStoredUser(): AuthUser | null {
     const raw = localStorage.getItem(USER_KEY);
@@ -31,6 +32,7 @@ export class AuthService {
     localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
     localStorage.setItem(USER_KEY, JSON.stringify(response.user));
     this.currentUserSignal.set(response.user);
+    this.socket.connect(response.accessToken);
   }
 
   login(email: string, password: string): Observable<ApiResponse<AuthResponse>> {
@@ -84,6 +86,7 @@ export class AuthService {
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     this.currentUserSignal.set(null);
+    this.socket.disconnect();
     this.router.navigate(["/login"]);
   }
 
