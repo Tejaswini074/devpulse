@@ -1,6 +1,6 @@
 # DevPulse Build Progress
 
-**Status: V1 build complete.** Backend + web app fully built, wired, and browser-verified end-to-end (see "Session 2" section at the bottom). Everything in "What's left" below was finished.
+**Status: V1 complete and browser-verified (Sessions 1-3). V2 (real-time + collaboration features) built and test-verified but not yet browser-walked (see "Session 4" at the bottom).**
 
 Working log for the Backend + Web V1 build (see full plan at `C:\Users\LENOVO\.claude\plans\cached-dancing-wren.md`).
 Read this file first when resuming — it has everything needed to continue without re-discovering context.
