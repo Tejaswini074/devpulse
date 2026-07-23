@@ -198,7 +198,8 @@ class AuthService {
         if (!user) {
             throw new Error(MSG.USER_NOT_FOUND);
         }
-        return user;
+        const { password, ...profile } = user;
+        return profile;
     }
 
 async updateProfile(userId, data) {

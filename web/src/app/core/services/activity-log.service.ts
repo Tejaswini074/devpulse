@@ -11,7 +11,8 @@ export class ActivityLogService {
 
   constructor(private http: HttpClient) {}
 
-  list(params: { module_name?: string; user_id?: number; page?: number } = {}): Observable<ApiResponse<PaginatedResult<ActivityLog>>> {
-    return this.http.get<ApiResponse<PaginatedResult<ActivityLog>>>(this.baseUrl, { params: params as any });
+  list(params: { module_name?: string; user_id?: number; from?: string; to?: string; page?: number } = {}): Observable<ApiResponse<PaginatedResult<ActivityLog>>> {
+    const cleaned = Object.fromEntries(Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== ""));
+    return this.http.get<ApiResponse<PaginatedResult<ActivityLog>>>(this.baseUrl, { params: cleaned as any });
   }
 }

@@ -134,6 +134,59 @@ describe("AuthService.forgotPassword", () => {
     });
 });
 
+describe("AuthService.getProfile", () => {
+    beforeEach(() => jest.clearAllMocks());
+
+    test("throws when the user does not exist", async () => {
+        AuthRepository.findUserById.mockResolvedValue(undefined);
+        await expect(AuthService.getProfile(99)).rejects.toThrow("User not found");
+    });
+
+    test("never leaks the password hash to the caller", async () => {
+        AuthRepository.findUserById.mockResolvedValue({
+            id: 1, name: "Rahul", email: "rahul@devpulse.com", password: "super-secret-hash", role: "Manager"
+        });
+
+        const result = await AuthService.getProfile(1);
+
+        expect(result.password).toBeUndefined();
+        expect(result).toEqual({ id: 1, name: "Rahul", email: "rahul@devpulse.com", role: "Manager" });
+    });
+});
+
+describe("AuthService.changePassword", () => {
+    beforeEach(() => jest.clearAllMocks());
+
+    test("rejects when the current password is wrong", async () => {
+        AuthRepository.findUserById.mockResolvedValue({ id: 1, password: "hashed" });
+        comparePassword.mockResolvedValue(false);
+
+        await expect(AuthService.changePassword(1, "wrong", "NewPass1!")).rejects.toThrow("Current password is incorrect");
+        expect(AuthRepository.updatePassword).not.toHaveBeenCalled();
+    });
+
+    test("rejects reusing the same password", async () => {
+        AuthRepository.findUserById.mockResolvedValue({ id: 1, password: "hashed" });
+        comparePassword.mockResolvedValue(true);
+
+        await expect(AuthService.changePassword(1, "correct", "correct")).rejects.toThrow("cannot be the same");
+        expect(AuthRepository.updatePassword).not.toHaveBeenCalled();
+    });
+
+    test("hashes and saves the new password, then forces re-login on all devices", async () => {
+        AuthRepository.findUserById.mockResolvedValue({ id: 1, password: "old-hashed" });
+        comparePassword.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+        hashPassword.mockResolvedValue("new-hashed");
+
+        const result = await AuthService.changePassword(1, "correct", "NewPass1!");
+
+        expect(hashPassword).toHaveBeenCalledWith("NewPass1!");
+        expect(AuthRepository.updatePassword).toHaveBeenCalledWith(1, "new-hashed");
+        expect(AuthRepository.clearRefreshToken).toHaveBeenCalledWith(1);
+        expect(result).toBe(true);
+    });
+});
+
 describe("AuthService.resetPassword", () => {
     beforeEach(() => jest.clearAllMocks());
 

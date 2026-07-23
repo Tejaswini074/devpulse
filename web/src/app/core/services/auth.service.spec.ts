@@ -98,4 +98,43 @@ describe("AuthService", () => {
     expect(service.getRefreshToken()).toBe("new-refresh");
     expect(service.currentUser()?.email).toBe("rahul@devpulse.com");
   });
+
+  it("getProfile GETs the profile endpoint", () => {
+    service.getProfile().subscribe();
+    const req = httpMock.expectOne(`${environment.apiUrl}/auth/profile`);
+    expect(req.request.method).toBe("GET");
+    req.flush({ success: true, message: "ok", data: { id: 1, name: "Rahul Sharma", email: "rahul@devpulse.com" } });
+  });
+
+  it("updateProfile PUTs the profile endpoint and updates the stored user's name", () => {
+    service.login("rahul@devpulse.com", "Admin@123").subscribe();
+    httpMock.expectOne(`${environment.apiUrl}/auth/login`).flush({ success: true, message: "ok", data: authResponse });
+
+    service.updateProfile({ name: "Rahul S." }).subscribe();
+    const req = httpMock.expectOne(`${environment.apiUrl}/auth/profile`);
+    expect(req.request.method).toBe("PUT");
+    expect(req.request.body).toEqual({ name: "Rahul S." });
+    req.flush({ success: true, message: "ok", data: null });
+
+    expect(service.currentUser()?.name).toBe("Rahul S.");
+    expect(JSON.parse(localStorage.getItem("devpulse_user")!).name).toBe("Rahul S.");
+  });
+
+  it("updateProfile does not touch the stored user when no name is given", () => {
+    service.login("rahul@devpulse.com", "Admin@123").subscribe();
+    httpMock.expectOne(`${environment.apiUrl}/auth/login`).flush({ success: true, message: "ok", data: authResponse });
+
+    service.updateProfile({ designation: "Engineer" }).subscribe();
+    httpMock.expectOne(`${environment.apiUrl}/auth/profile`).flush({ success: true, message: "ok", data: null });
+
+    expect(service.currentUser()?.name).toBe("Rahul Sharma");
+  });
+
+  it("changePassword PUTs current and new passwords to the change-password endpoint", () => {
+    service.changePassword("oldpw", "NewPass1!").subscribe();
+    const req = httpMock.expectOne(`${environment.apiUrl}/auth/change-password`);
+    expect(req.request.method).toBe("PUT");
+    expect(req.request.body).toEqual({ currentPassword: "oldpw", newPassword: "NewPass1!" });
+    req.flush({ success: true, message: "ok", data: null });
+  });
 });

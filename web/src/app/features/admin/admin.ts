@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from "@angular/core";
+import { Component, OnInit, computed, inject, signal } from "@angular/core";
 import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
 import { UserService, OrgUser } from "../../core/services/user.service";
 import { InviteService } from "../../core/services/invite.service";
@@ -13,10 +13,11 @@ import { WorkCalendarEntry } from "../../core/models/calendar.model";
 import { Icon } from "../../shared/components/icon";
 import { Tabs, TabItem } from "../../shared/components/tabs";
 import { EmptyState } from "../../shared/components/empty-state";
+import { Pagination } from "../../shared/components/pagination";
 
 @Component({
   selector: "app-admin",
-  imports: [ReactiveFormsModule, Icon, Tabs, EmptyState],
+  imports: [ReactiveFormsModule, Icon, Tabs, EmptyState, Pagination],
   templateUrl: "./admin.html"
 })
 export class Admin implements OnInit {
@@ -46,9 +47,31 @@ export class Admin implements OnInit {
   readonly inviteError = signal("");
   readonly teamError = signal("");
 
+  readonly userSearch = signal("");
+  readonly userRoleFilter = signal("");
+  readonly filteredUsers = computed(() => {
+    const search = this.userSearch().trim().toLowerCase();
+    const role = this.userRoleFilter();
+    return this.users().filter((u) => {
+      if (role && u.role !== role) return false;
+      if (search && !u.name.toLowerCase().includes(search) && !u.email.toLowerCase().includes(search)) return false;
+      return true;
+    });
+  });
+
   readonly activityLogs = signal<ActivityLog[]>([]);
+  readonly activityPage = signal(1);
+  readonly activityTotalPages = signal(1);
+  readonly activityTotal = signal(0);
   readonly calendarEntries = signal<WorkCalendarEntry[]>([]);
   readonly showHolidayForm = signal(false);
+
+  readonly activityFilterForm = this.fb.group({
+    module_name: [""],
+    user_id: [null as number | null],
+    from: [""],
+    to: [""]
+  });
 
   readonly settingsForm = this.fb.group({
     company_name: [""],
@@ -90,6 +113,22 @@ export class Admin implements OnInit {
     }
   }
 
+  applyActivityFilters(): void {
+    this.activityPage.set(1);
+    this.loadActivityLogs();
+  }
+
+  clearActivityFilters(): void {
+    this.activityFilterForm.reset({ module_name: "", user_id: null, from: "", to: "" });
+    this.activityPage.set(1);
+    this.loadActivityLogs();
+  }
+
+  goToActivityPage(page: number): void {
+    this.activityPage.set(page);
+    this.loadActivityLogs();
+  }
+
   loadUsers(): void {
     this.loading.set(true);
     this.userService.list().subscribe((res) => {
@@ -103,7 +142,20 @@ export class Admin implements OnInit {
   }
 
   loadActivityLogs(): void {
-    this.activityLogService.list().subscribe((res) => this.activityLogs.set(res.data.items));
+    const raw = this.activityFilterForm.getRawValue();
+    this.activityLogService
+      .list({
+        module_name: raw.module_name ?? undefined,
+        user_id: raw.user_id ?? undefined,
+        from: raw.from ?? undefined,
+        to: raw.to ?? undefined,
+        page: this.activityPage()
+      })
+      .subscribe((res) => {
+        this.activityLogs.set(res.data.items);
+        this.activityTotalPages.set(res.data.pagination.totalPages);
+        this.activityTotal.set(res.data.pagination.total);
+      });
   }
 
   loadSettings(): void {

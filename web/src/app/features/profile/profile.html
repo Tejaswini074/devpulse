@@ -1,0 +1,116 @@
+<div class="space-y-5 max-w-2xl">
+  <div>
+    <h1 class="text-xl font-semibold text-slate-900 dark:text-slate-100">My Profile</h1>
+    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage your account details, GitHub connection, and password.</p>
+  </div>
+
+  <app-tabs [tabs]="tabs" [active]="activeTab()" (activeChange)="setTab($event)" />
+
+  @if (loading()) {
+    <app-skeleton [rows]="5" />
+  } @else {
+    @if (activeTab() === "profile") {
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 space-y-4 shadow-sm shadow-slate-200/50 dark:shadow-none">
+        <div class="flex items-center gap-3 pb-1">
+          <div class="w-12 h-12 rounded-full bg-linear-to-br from-brand-400 to-brand-600 flex items-center justify-center text-lg font-semibold text-white shrink-0">
+            {{ profile()?.name?.charAt(0) }}
+          </div>
+          <div class="min-w-0">
+            <div class="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">{{ profile()?.email }}</div>
+            <div class="text-xs text-slate-400 dark:text-slate-500">{{ profile()?.employee_code }} &middot; {{ profile()?.role }}</div>
+          </div>
+        </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>
+            <input formControlName="name" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Designation</label>
+              <input formControlName="designation" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Department</label>
+              <input formControlName="department" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 dark:text-slate-500">
+            Last login: {{ profile()?.last_login ? (profile()!.last_login | date: "MMM d, y, h:mm a") : "Never" }}
+          </p>
+          <div class="flex justify-end">
+            <button type="submit" [disabled]="saving()" class="bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm shadow-brand-600/25 hover:shadow-md hover:shadow-brand-600/30 transition-all">
+              {{ saving() ? "Saving..." : "Save changes" }}
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    @if (activeTab() === "github") {
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 space-y-4 shadow-sm shadow-slate-200/50 dark:shadow-none">
+        <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200">
+          <app-icon name="github" [size]="18" />
+          <h2 class="text-sm font-semibold">GitHub connection</h2>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+          Connect your public GitHub username so DevPulse can track your commit activity for productivity scoring. Only public events are read.
+        </p>
+        <form [formGroup]="githubForm" (ngSubmit)="saveGithubUsername()" class="flex flex-col sm:flex-row gap-3">
+          <input
+            formControlName="github_username"
+            placeholder="e.g. octocat"
+            class="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+          />
+          <button type="submit" [disabled]="saving()" class="bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm shadow-brand-600/25 hover:shadow-md hover:shadow-brand-600/30 transition-all whitespace-nowrap">
+            {{ saving() ? "Saving..." : "Save username" }}
+          </button>
+        </form>
+        <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <p class="text-sm text-slate-500 dark:text-slate-400">Manually sync now instead of waiting for the nightly job.</p>
+          <button
+            (click)="syncGithub()"
+            [disabled]="syncing()"
+            class="flex items-center gap-2 text-sm font-medium px-3.5 py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 transition-colors whitespace-nowrap"
+          >
+            <app-icon name="refresh-cw" [size]="14" />
+            {{ syncing() ? "Syncing..." : "Sync now" }}
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (activeTab() === "security") {
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 space-y-4 shadow-sm shadow-slate-200/50 dark:shadow-none">
+        <div class="flex items-center gap-2 text-slate-700 dark:text-slate-200">
+          <app-icon name="lock" [size]="18" />
+          <h2 class="text-sm font-semibold">Change password</h2>
+        </div>
+        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Current password</label>
+            <input type="password" formControlName="currentPassword" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">New password</label>
+            <input type="password" formControlName="newPassword" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">At least 8 characters, with an uppercase letter, lowercase letter, number, and symbol.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Confirm new password</label>
+            <input type="password" formControlName="confirmPassword" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            @if (passwordForm.errors?.["mismatch"] && passwordForm.get("confirmPassword")?.touched) {
+              <p class="text-xs text-red-500 mt-1">Passwords do not match.</p>
+            }
+          </div>
+          <div class="flex justify-end">
+            <button type="submit" [disabled]="changingPassword()" class="bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm shadow-brand-600/25 hover:shadow-md hover:shadow-brand-600/30 transition-all">
+              {{ changingPassword() ? "Changing..." : "Change password" }}
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+  }
+</div>

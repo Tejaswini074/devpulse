@@ -143,4 +143,71 @@ describe("TaskBoard", () => {
     expect(todoColumn.map((t) => t.id)).toEqual([1]);
     expect(todoColumn[0].status).toBe("Todo");
   });
+
+  it("searchText filters the board by task title, case-insensitively", () => {
+    const component = createAndLoad([
+      buildTask({ id: 1, title: "Fix login bug", status: "Todo" }),
+      buildTask({ id: 2, title: "Write onboarding docs", status: "Todo" })
+    ]);
+
+    component.searchText.set("LOGIN");
+
+    expect(component.columns()["Todo"].map((t) => t.id)).toEqual([1]);
+  });
+
+  it("filterProjectId narrows the board to a single project", () => {
+    const component = createAndLoad([
+      buildTask({ id: 1, project_id: 1, status: "Todo" }),
+      buildTask({ id: 2, project_id: 2, status: "Todo" })
+    ]);
+
+    component.filterProjectId.set(2);
+
+    expect(component.columns()["Todo"].map((t) => t.id)).toEqual([2]);
+  });
+
+  it("filterAssignedTo narrows the board to one assignee", () => {
+    const component = createAndLoad([
+      buildTask({ id: 1, assigned_to: 10, status: "Todo" }),
+      buildTask({ id: 2, assigned_to: 20, status: "Todo" })
+    ]);
+
+    component.filterAssignedTo.set(20);
+
+    expect(component.columns()["Todo"].map((t) => t.id)).toEqual([2]);
+  });
+
+  it("combines search, project, and assignee filters", () => {
+    const component = createAndLoad([
+      buildTask({ id: 1, project_id: 1, assigned_to: 10, title: "Fix login bug", status: "Todo" }),
+      buildTask({ id: 2, project_id: 1, assigned_to: 20, title: "Fix login bug", status: "Todo" }),
+      buildTask({ id: 3, project_id: 2, assigned_to: 10, title: "Fix login bug", status: "Todo" })
+    ]);
+
+    component.searchText.set("login");
+    component.filterProjectId.set(1);
+    component.filterAssignedTo.set(10);
+
+    expect(component.columns()["Todo"].map((t) => t.id)).toEqual([1]);
+  });
+
+  it("seeds filterProjectId from the project_id route query param", async () => {
+    await TestBed.resetTestingModule().configureTestingModule({
+      imports: [TaskBoard],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({ project_id: "5" }) } } }
+      ]
+    }).compileComponents();
+    httpMock = TestBed.inject(HttpTestingController);
+
+    const fixture = TestBed.createComponent(TaskBoard);
+    fixture.detectChanges();
+    httpMock.expectOne((r) => r.url === `${environment.apiUrl}/projects`).flush({ success: true, message: "ok", data: { items: [], pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 } } });
+    httpMock.expectOne((r) => r.url === `${environment.apiUrl}/users`).flush({ success: true, message: "ok", data: { items: [], pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 } } });
+    httpMock.expectOne((r) => r.url === `${environment.apiUrl}/tasks`).flush({ success: true, message: "ok", data: { items: [], pagination: { page: 1, pageSize: 200, total: 0, totalPages: 0 } } });
+
+    expect(fixture.componentInstance.filterProjectId()).toBe(5);
+  });
 });

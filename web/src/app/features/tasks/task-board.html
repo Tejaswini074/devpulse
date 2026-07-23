@@ -13,6 +13,38 @@
     </button>
   </div>
 
+  <div class="flex flex-wrap items-center gap-2">
+    <div class="relative flex-1 min-w-[180px]">
+      <app-icon name="search" [size]="14" class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+      <input
+        [value]="searchText()"
+        (input)="searchText.set($any($event.target).value)"
+        placeholder="Search tasks..."
+        class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 pl-8 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+      />
+    </div>
+    <select
+      [value]="filterProjectId() ?? ''"
+      (change)="filterProjectId.set($any($event.target).value ? +$any($event.target).value : null)"
+      class="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+    >
+      <option value="">All projects</option>
+      @for (p of projects(); track p.id) {
+        <option [value]="p.id">{{ p.project_name }}</option>
+      }
+    </select>
+    <select
+      [value]="filterAssignedTo() ?? ''"
+      (change)="filterAssignedTo.set($any($event.target).value ? +$any($event.target).value : null)"
+      class="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+    >
+      <option value="">Everyone</option>
+      @for (u of orgUsers(); track u.id) {
+        <option [value]="u.id">{{ u.name }}</option>
+      }
+    </select>
+  </div>
+
   @if (showForm()) {
     <form [formGroup]="form" (ngSubmit)="submit()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 space-y-4 shadow-sm shadow-slate-200/50 dark:shadow-none">
       @if (errorMessage()) {

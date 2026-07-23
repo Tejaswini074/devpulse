@@ -20,6 +20,7 @@ export const routes: Routes = [
       { path: 'projects/:id', loadComponent: () => import('./features/projects/project-detail').then((m) => m.ProjectDetail) },
       { path: 'tasks', loadComponent: () => import('./features/tasks/task-board').then((m) => m.TaskBoard) },
       { path: 'daily-logs', loadComponent: () => import('./features/daily-logs/daily-log-list').then((m) => m.DailyLogList) },
+      { path: 'profile', loadComponent: () => import('./features/profile/profile').then((m) => m.Profile) },
       { path: 'leave', loadComponent: () => import('./features/leave/leave').then((m) => m.LeavePage) },
       { path: 'reports', loadComponent: () => import('./features/reports/reports').then((m) => m.Reports) },
       {

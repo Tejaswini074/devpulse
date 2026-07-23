@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from "@angular/core";
+import { Component, OnInit, computed, inject, signal } from "@angular/core";
 import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
 import { RouterLink } from "@angular/router";
 import { ProjectService } from "../../core/services/project.service";
@@ -28,6 +28,18 @@ export class ProjectList implements OnInit {
   readonly showForm = signal(false);
   readonly submitting = signal(false);
   readonly errorMessage = signal("");
+
+  readonly searchText = signal("");
+  readonly statusFilter = signal("");
+  readonly filteredProjects = computed(() => {
+    const search = this.searchText().trim().toLowerCase();
+    const status = this.statusFilter();
+    return this.projects().filter((p) => {
+      if (status && p.status !== status) return false;
+      if (search && !p.project_name.toLowerCase().includes(search)) return false;
+      return true;
+    });
+  });
 
   readonly canManage = this.auth.hasAnyRole(["Admin", "Super Admin", "Manager"]);
 

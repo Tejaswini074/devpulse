@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from "@angular/core";
+import { Component, OnInit, computed, inject, signal } from "@angular/core";
 import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from "@angular/cdk/drag-drop";
@@ -33,11 +33,27 @@ export class TaskBoard implements OnInit {
   readonly errorMessage = signal("");
   readonly selectedTaskId = signal<number | null>(null);
 
-  readonly columns = signal<Record<TaskStatus, Task[]>>({
-    Backlog: [], Todo: [], "In Progress": [], "Code Review": [], Testing: [], Done: [], Blocked: []
-  });
+  private allTasks = signal<Task[]>([]);
 
-  private projectIdFilter: number | null = null;
+  readonly searchText = signal("");
+  readonly filterProjectId = signal<number | null>(null);
+  readonly filterAssignedTo = signal<number | null>(null);
+
+  readonly columns = computed<Record<TaskStatus, Task[]>>(() => {
+    const search = this.searchText().trim().toLowerCase();
+    const projectId = this.filterProjectId();
+    const assignedTo = this.filterAssignedTo();
+    const grouped: Record<TaskStatus, Task[]> = {
+      Backlog: [], Todo: [], "In Progress": [], "Code Review": [], Testing: [], Done: [], Blocked: []
+    };
+    for (const task of this.allTasks()) {
+      if (projectId && task.project_id !== projectId) continue;
+      if (assignedTo && task.assigned_to !== assignedTo) continue;
+      if (search && !task.title.toLowerCase().includes(search)) continue;
+      grouped[task.status].push(task);
+    }
+    return grouped;
+  });
 
   readonly form = this.fb.group({
     project_id: [null as number | null, [Validators.required]],
@@ -51,7 +67,7 @@ export class TaskBoard implements OnInit {
 
   ngOnInit(): void {
     const projectIdParam = this.route.snapshot.queryParamMap.get("project_id");
-    this.projectIdFilter = projectIdParam ? Number(projectIdParam) : null;
+    this.filterProjectId.set(projectIdParam ? Number(projectIdParam) : null);
 
     this.projectService.list().subscribe((res) => this.projects.set(res.data.items));
     this.userService.list().subscribe((res) => this.orgUsers.set(res.data.items));
@@ -60,14 +76,8 @@ export class TaskBoard implements OnInit {
 
   load(): void {
     this.loading.set(true);
-    this.taskService.list(this.projectIdFilter ? { project_id: this.projectIdFilter } : {}).subscribe((res) => {
-      const grouped: Record<TaskStatus, Task[]> = {
-        Backlog: [], Todo: [], "In Progress": [], "Code Review": [], Testing: [], Done: [], Blocked: []
-      };
-      for (const task of res.data.items) {
-        grouped[task.status].push(task);
-      }
-      this.columns.set(grouped);
+    this.taskService.list().subscribe((res) => {
+      this.allTasks.set(res.data.items);
       this.loading.set(false);
     });
   }

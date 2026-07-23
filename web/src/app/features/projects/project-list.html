@@ -85,6 +85,32 @@
     </form>
   }
 
+  @if (!loading() && projects().length) {
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="relative flex-1 min-w-[200px]">
+        <app-icon name="search" [size]="14" class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+        <input
+          [value]="searchText()"
+          (input)="searchText.set($any($event.target).value)"
+          placeholder="Search projects..."
+          class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 pl-8 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+        />
+      </div>
+      <select
+        [value]="statusFilter()"
+        (change)="statusFilter.set($any($event.target).value)"
+        class="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+      >
+        <option value="">All statuses</option>
+        <option value="Planned">Planned</option>
+        <option value="Active">Active</option>
+        <option value="On Hold">On Hold</option>
+        <option value="Completed">Completed</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+    </div>
+  }
+
   @if (loading()) {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       @for (n of [1, 2, 3]; track n) {
@@ -97,9 +123,13 @@
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm shadow-slate-200/50 dark:shadow-none">
       <app-empty-state icon="folder" title="No projects yet" subtitle="Create your first project to start assigning tasks." [actionLabel]="canManage ? 'New project' : ''" (action)="toggleForm()" />
     </div>
+  } @else if (!filteredProjects().length) {
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm shadow-slate-200/50 dark:shadow-none">
+      <app-empty-state icon="folder" title="No matching projects" subtitle="Try a different search or status filter." />
+    </div>
   } @else {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      @for (project of projects(); track project.id) {
+      @for (project of filteredProjects(); track project.id) {
         <a
           [routerLink]="['/projects', project.id]"
           class="block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-none hover:border-brand-300 dark:hover:border-brand-600 hover:shadow-lg hover:shadow-slate-200/70 dark:hover:shadow-none hover:-translate-y-0.5 transition-all duration-200"

@@ -161,3 +161,20 @@ Web (`web/src/app/`):
 **Still not done** (lower priority, intentionally deferred):
 - No dedicated settings/calendar/activity-log pages — currently folded into `admin`; fine for now but worth splitting into tabs if `admin.ts` grows further.
 - No browser/Playwright walkthrough of the V2 features yet (comments, attachments, notifications, sprints, leave, real-time socket push) — everything above is automated-test coverage, not a manual click-through in a running app.
+
+## Session 5 (2026-07-23) — closed the "unreachable feature" gaps
+
+A full audit turned up backend functionality with **no way to reach it from the UI**, plus some missing list ergonomics. All closed out:
+
+- **Security fix**: `GET /auth/profile` was returning the user's bcrypt password hash straight through to the client (`AuthService.getProfile` returned the raw DB row). Now strips `password` before returning. Also added `github_username` to the `findUserById` SELECT so profile fetches can show/edit it.
+- **New `/profile` page** (`features/profile/`, tabs: Profile / GitHub / Security): edit name/designation/department (`AuthService.updateProfile`, new), change password with current-password check + confirm-match validator (`AuthService.changePassword`, new — logs the user out ~1.5s after success since the backend invalidates the refresh token), and — this was the biggest dangling piece — **a GitHub connect UI**: set `github_username` and trigger a manual `POST /github/sync`, both of which existed on the backend since V1 with zero frontend entry point. Linked from the sidebar user block.
+- **Search/filter bars** (all client-side over an already-fetched list, since orgs are small enough that this beats extra round trips):
+  - Tasks kanban board: search by title + filter by project + filter by assignee. `columns` was refactored from a plain signal set once in `load()` into a `computed()` derived from a new `allTasks` signal, so filters recompute live without touching the CDK drag-drop arrays' identity (drag/drop still mutates those arrays in place, unchanged behavior — see `task-board.spec.ts` for regression coverage of that).
+  - Projects list: search by name + status filter.
+  - Admin Users tab: search by name/email + role filter.
+- **Admin Activity Log tab**: filter form (module name, user, from/to date) wired to the backend's existing (already-tested) filter support, plus a new reusable `shared/components/pagination.ts` component wired to the endpoint's existing pagination metadata (it was being fetched and discarded before).
+- **Bug caught by a failing test while building the above**: passing a filter object with `undefined` values straight into Angular's `HttpClient` `params` option serializes them as the literal string `"undefined"` in the query string (Angular does not omit them). `ActivityLogService.list()` now strips `undefined`/`null`/`""` values before building the request — otherwise clearing a filter, or ever using just one of the four filters, would have silently sent `module_name=undefined` and the backend's exact-match `WHERE` would return zero rows.
+- Added a `search` / `user` / `lock` / `refresh-cw` icon to the shared `Icon` component for the above.
+- New/updated tests: `auth.services.test.js` (`getProfile` password-stripping, `changePassword`), `auth.service.spec.ts` (new methods), `profile.spec.ts`, `pagination.spec.ts`, `admin.spec.ts` (new — user search/role filter, activity log filters + pagination), `project-list.spec.ts` (new — search/status filter), `task-board.spec.ts` (extended with filter tests + the undefined-params regression). Backend **94/94**, frontend **126/126**, `ng build` clean.
+
+**Still open**: no dedicated settings/calendar/activity-log pages (unchanged from before), no browser/Playwright walkthrough of any of this — all verification above is automated tests + `ng build`, not a manual click-through.

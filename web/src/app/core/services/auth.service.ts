@@ -4,7 +4,7 @@ import { Router } from "@angular/router";
 import { Observable, tap } from "rxjs";
 import { environment } from "../../../environments/environment";
 import { ApiResponse } from "../models/api.model";
-import { AuthResponse, AuthUser } from "../models/user.model";
+import { AuthResponse, AuthUser, UserProfile } from "../models/user.model";
 import { SocketService } from "./socket.service";
 
 const ACCESS_TOKEN_KEY = "devpulse_access_token";
@@ -79,6 +79,27 @@ export class AuthService {
           localStorage.setItem(REFRESH_TOKEN_KEY, res.data.refreshToken);
         })
       );
+  }
+
+  getProfile(): Observable<ApiResponse<UserProfile>> {
+    return this.http.get<ApiResponse<UserProfile>>(`${this.baseUrl}/profile`);
+  }
+
+  updateProfile(payload: { name?: string; designation?: string; department?: string }): Observable<ApiResponse<null>> {
+    return this.http.put<ApiResponse<null>>(`${this.baseUrl}/profile`, payload).pipe(
+      tap(() => {
+        const current = this.currentUserSignal();
+        if (current && payload.name) {
+          const updated = { ...current, name: payload.name };
+          localStorage.setItem(USER_KEY, JSON.stringify(updated));
+          this.currentUserSignal.set(updated);
+        }
+      })
+    );
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<ApiResponse<null>> {
+    return this.http.put<ApiResponse<null>>(`${this.baseUrl}/change-password`, { currentPassword, newPassword });
   }
 
   logout(): void {
