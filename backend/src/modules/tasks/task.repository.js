@@ -22,7 +22,7 @@ class TaskRepository {
             data.severity ?? "Medium",
             data.status ?? "Todo",
             data.estimated_hours ?? null,
-            data.due_date ?? null,
+            data.due_date || null,
             data.created_by
         ]);
         return result;
@@ -115,7 +115,7 @@ class TaskRepository {
             data.severity ?? "Medium",
             data.status ?? "Todo",
             data.estimated_hours ?? null,
-            data.due_date ?? null,
+            data.due_date || null,
             data.progress ?? 0,
             data.updated_by,
             id,

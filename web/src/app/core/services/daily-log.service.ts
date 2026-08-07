@@ -12,7 +12,8 @@ export class DailyLogService {
   constructor(private http: HttpClient) {}
 
   list(params: { project_id?: number; user_id?: number; from?: string; to?: string; page?: number } = {}): Observable<ApiResponse<PaginatedResult<DailyLog>>> {
-    return this.http.get<ApiResponse<PaginatedResult<DailyLog>>>(this.baseUrl, { params: params as any });
+    const cleaned = Object.fromEntries(Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== ""));
+    return this.http.get<ApiResponse<PaginatedResult<DailyLog>>>(this.baseUrl, { params: cleaned as any });
   }
 
   create(payload: Partial<DailyLog>): Observable<ApiResponse<{ id: number }>> {

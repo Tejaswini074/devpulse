@@ -20,12 +20,12 @@ exports.sprintValidator = [
         .withMessage("Goal is too long"),
 
     body("start_date")
-        .optional({ nullable: true })
+        .optional({ checkFalsy: true })
         .isISO8601()
         .withMessage("Invalid start date"),
 
     body("end_date")
-        .optional({ nullable: true })
+        .optional({ checkFalsy: true })
         .isISO8601()
         .withMessage("Invalid end date")
 ];

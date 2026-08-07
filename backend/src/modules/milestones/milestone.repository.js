@@ -11,7 +11,7 @@ class MilestoneRepository {
             data.project_id,
             data.title,
             data.description ?? null,
-            data.target_date ?? null,
+            data.target_date || null,
             data.created_by
         ]);
         return result;
@@ -50,7 +50,7 @@ class MilestoneRepository {
         const [result] = await db.execute(sql, [
             data.title,
             data.description ?? null,
-            data.target_date ?? null,
+            data.target_date || null,
             id
         ]);
         return result;

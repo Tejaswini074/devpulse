@@ -11,8 +11,8 @@ class SprintRepository {
             data.project_id,
             data.sprint_name,
             data.goal ?? null,
-            data.start_date ?? null,
-            data.end_date ?? null,
+            data.start_date || null,
+            data.end_date || null,
             data.created_by
         ]);
         return result;
@@ -63,8 +63,8 @@ class SprintRepository {
         const [result] = await db.execute(sql, [
             data.sprint_name,
             data.goal ?? null,
-            data.start_date ?? null,
-            data.end_date ?? null,
+            data.start_date || null,
+            data.end_date || null,
             id
         ]);
         return result;

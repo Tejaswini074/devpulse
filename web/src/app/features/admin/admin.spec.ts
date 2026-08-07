@@ -108,6 +108,42 @@ describe("Admin", () => {
     expect(component.activityTotalPages()).toBe(3);
   });
 
+  it("pagedUsers shows at most 10 users per page, and usersTotalPages reflects the filtered count", () => {
+    const fixture = TestBed.createComponent(Admin);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const twelveUsers = Array.from({ length: 12 }, (_, i) => ({
+      id: i + 1, name: `User ${i + 1}`, email: `user${i + 1}@devpulse.com`, role: "Developer", status: "Active"
+    }));
+    httpMock.expectOne((r) => r.url === usersUrl).flush({
+      success: true, message: "ok",
+      data: { items: twelveUsers, pagination: { page: 1, pageSize: 100, total: 12, totalPages: 1 } }
+    });
+    httpMock.expectOne((r) => r.url === teamsUrl).flush({ success: true, message: "ok", data: { items: [], pagination: { page: 1, pageSize: 100, total: 0, totalPages: 0 } } });
+    httpMock.expectOne(settingsUrl).flush({ success: true, message: "ok", data: {} });
+    httpMock.expectOne((r) => r.url === calendarUrl).flush({ success: true, message: "ok", data: [] });
+
+    expect(component.pagedUsers().length).toBe(10);
+    expect(component.usersTotalPages()).toBe(2);
+
+    component.goToUsersPage(2);
+    expect(component.pagedUsers().length).toBe(2);
+    expect(component.pagedUsers()[0].id).toBe(11);
+  });
+
+  it("setUserSearch and setUserRoleFilter reset the current page back to 1", () => {
+    const { component } = createAndInit();
+    component.usersPage.set(2);
+
+    component.setUserSearch("priya");
+    expect(component.usersPage()).toBe(1);
+
+    component.usersPage.set(2);
+    component.setUserRoleFilter("Tester");
+    expect(component.usersPage()).toBe(1);
+  });
+
   it("clearActivityFilters resets the form and reloads page 1", () => {
     const { component } = createAndInit();
     component.setTab("activity");

@@ -34,12 +34,12 @@ exports.projectValidator = [
         .withMessage("Invalid project manager"),
 
     body("start_date")
-        .optional()
+        .optional({ checkFalsy: true })
         .isISO8601()
         .withMessage("Invalid start date"),
 
     body("end_date")
-        .optional()
+        .optional({ checkFalsy: true })
         .isISO8601()
         .withMessage("Invalid end date")
 ];

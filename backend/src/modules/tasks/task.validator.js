@@ -43,7 +43,7 @@ exports.taskValidator = [
         .withMessage("Invalid status"),
 
     body("due_date")
-        .optional()
+        .optional({ checkFalsy: true })
         .isISO8601()
         .withMessage("Invalid due date")
 ];

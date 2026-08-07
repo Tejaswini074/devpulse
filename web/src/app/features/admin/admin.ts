@@ -59,6 +59,15 @@ export class Admin implements OnInit {
     });
   });
 
+  private static readonly USERS_PAGE_SIZE = 10;
+  readonly usersPage = signal(1);
+  readonly usersTotalPages = computed(() => Math.max(1, Math.ceil(this.filteredUsers().length / Admin.USERS_PAGE_SIZE)));
+  readonly pagedUsers = computed(() => {
+    const page = Math.min(this.usersPage(), this.usersTotalPages());
+    const start = (page - 1) * Admin.USERS_PAGE_SIZE;
+    return this.filteredUsers().slice(start, start + Admin.USERS_PAGE_SIZE);
+  });
+
   readonly activityLogs = signal<ActivityLog[]>([]);
   readonly activityPage = signal(1);
   readonly activityTotalPages = signal(1);
@@ -111,6 +120,20 @@ export class Admin implements OnInit {
     if (tab === "activity" && !this.activityLogs().length) {
       this.loadActivityLogs();
     }
+  }
+
+  setUserSearch(value: string): void {
+    this.userSearch.set(value);
+    this.usersPage.set(1);
+  }
+
+  setUserRoleFilter(value: string): void {
+    this.userRoleFilter.set(value);
+    this.usersPage.set(1);
+  }
+
+  goToUsersPage(page: number): void {
+    this.usersPage.set(page);
   }
 
   applyActivityFilters(): void {

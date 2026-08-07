@@ -102,6 +102,21 @@ describe("App integration", () => {
         });
     });
 
+    describe("POST /api/tasks with an empty optional due_date", () => {
+        test("no longer rejected as a 400 validation error (regression: forms always send '' for an unset date)", async () => {
+            db.execute.mockResolvedValueOnce([{ insertId: 99 }]); // TaskRepository.create
+
+            const token = signToken({ id: 1, organization_id: 2, team_id: 2, role: "Manager" });
+            const res = await request(app)
+                .post("/api/tasks")
+                .set("Authorization", `Bearer ${token}`)
+                .send({ title: "New task", project_id: 1, assigned_to: 1, due_date: "" });
+
+            expect(res.status).toBe(201);
+            expect(res.body).toEqual({ success: true, message: "Task created successfully", data: { id: 99 } });
+        });
+    });
+
     test("CORS reflects only the configured FRONTEND_URL, not the request's Origin", async () => {
         const resEvil = await request(app).get("/api/teams").set("Origin", "http://evil.com");
         const resAllowed = await request(app).get("/api/teams").set("Origin", "http://localhost:8080");

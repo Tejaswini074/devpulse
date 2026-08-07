@@ -10,11 +10,12 @@ import { StatCard } from "../../shared/components/stat-card";
 import { Icon } from "../../shared/components/icon";
 import { Skeleton } from "../../shared/components/skeleton";
 import { EmptyState } from "../../shared/components/empty-state";
+import { Pagination } from "../../shared/components/pagination";
 import { ToastService } from "../../core/services/toast.service";
 
 @Component({
   selector: "app-daily-log-list",
-  imports: [ReactiveFormsModule, StatCard, Icon, Skeleton, EmptyState],
+  imports: [ReactiveFormsModule, StatCard, Icon, Skeleton, EmptyState, Pagination],
   templateUrl: "./daily-log-list.html"
 })
 export class DailyLogList implements OnInit {
@@ -31,6 +32,16 @@ export class DailyLogList implements OnInit {
   readonly userHours = signal<UserHours | null>(null);
   readonly showForm = signal(false);
   readonly errorMessage = signal("");
+
+  readonly page = signal(1);
+  readonly totalPages = signal(1);
+  readonly total = signal(0);
+
+  readonly filterForm = this.fb.group({
+    project_id: [null as number | null],
+    from: [""],
+    to: [""]
+  });
 
   readonly form = this.fb.group({
     project_id: [null as number | null, [Validators.required]],
@@ -57,10 +68,36 @@ export class DailyLogList implements OnInit {
 
   load(): void {
     this.loading.set(true);
-    this.dailyLogService.list().subscribe((res) => {
-      this.logs.set(res.data.items);
-      this.loading.set(false);
-    });
+    const raw = this.filterForm.getRawValue();
+    this.dailyLogService
+      .list({
+        project_id: raw.project_id ?? undefined,
+        from: raw.from || undefined,
+        to: raw.to || undefined,
+        page: this.page()
+      })
+      .subscribe((res) => {
+        this.logs.set(res.data.items);
+        this.totalPages.set(res.data.pagination.totalPages);
+        this.total.set(res.data.pagination.total);
+        this.loading.set(false);
+      });
+  }
+
+  applyFilters(): void {
+    this.page.set(1);
+    this.load();
+  }
+
+  clearFilters(): void {
+    this.filterForm.reset({ project_id: null, from: "", to: "" });
+    this.page.set(1);
+    this.load();
+  }
+
+  goToPage(page: number): void {
+    this.page.set(page);
+    this.load();
   }
 
   toggleForm(): void {
